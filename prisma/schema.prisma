@@ -98,6 +98,8 @@ enum PostStatus {
  * ===============
  */
 
+// A single 'user' model with a 'role' field whose 'enums' are defined above
+
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -106,4 +108,77 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   imageUrl  String?
+
+  // Right now, if User role == USER, then he will only see above fields in his Profile, but if User role == LAWYER, then below fields will apply including LawyerProfile sub-fields
+
+  // Profile and expertise
+  profile       LawyerProfile?
+  verifications Verification[]
+  // certifications Certifications[]
+  educations    Education[]
+  experiences   WorkExperience[]
+  skills        UserSkill[]
+  practiceAreas UserPracticeArea[]
+
+  // Networking
+  connectionsInitiated Connection[] @relation("connections_initiated")
+
+  connectionsReceived Connection[] @relation("connections_received")
+
+  // Cases
+
+  postedCases  Case[]            @relation("PostedCases")
+  applications CaseApplication[]
+  assignments  CaseAssignment[]
+
+  //Content
+
+  blogPosts BlogPost[]
+  comments  Comment[]
+  likes     PostLike[]
+
+  //AI /Documents
+
+  chatSessions ChatSession[]
+  documents    Document[]
+}
+
+model LawyerProfile {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  title                 String?
+  bio                   String?
+  location              String?
+  barNumber             String?
+  barCouncil            String?
+  yearsOfExperience     Int?     @default(0)
+  caseCount             Int?     @default(0)
+  hourlyRate            Int?
+  isAvailableForProBono Boolean  @default(true)
+  website               String?
+  linkedinUrl           String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  user                  User     @relation(fields: [userId], references: [id])
+
+  // Basically, we index the aforementioned columns, so when our db query searches, it can search on this indexed field, which improves our query performance.
+
+  @@index([yearsOfExperience])
+  @@index([isAvailableForProBono])
+}
+
+/**
+ * ==================
+ * Expertise: Practice Areas & Skills
+ * =================
+ */
+
+// Specifically for Lawyers, they can select their practice areas during profile setup. Check if you can do practiceArea? to this field in 'User' model.
+model PracticeArea {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  slug String @unique
+
+  users UserPracticeArea[]
+  cases CasePracticeArea[]
 }
