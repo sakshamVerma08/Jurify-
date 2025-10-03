@@ -3,7 +3,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
-:root {
+:root
+{
   /* Updated theme to match professional legal platform design */
   --background: oklch(0.98 0.005 106.423);
   --foreground: oklch(0.15 0.02 258.338);
