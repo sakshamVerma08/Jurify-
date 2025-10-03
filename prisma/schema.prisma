@@ -1,15 +1,109 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// schema.prisma
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL_DEVELOPMENT")
+}
+
+/**
+ * =========================
+ * Enums
+ * =========================
+ */
+
+// Client's Role
+enum Role {
+  USER
+  LAWYER
+}
+
+enum VerificationType {
+  IDENTITY // government issued ID cards etc.
+  BAR_LICENSE // bar council license
+  EMAIL
+  PHONE
+  EDUCATION //educational qualification verification
+}
+
+// For Lawyer/User Verification status
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  EXPIRED
+}
+
+// for case status
+enum CaseStatus {
+  OPEN
+  ASSIGNED
+  COMPLETED
+  CANCELLED
+  IN_PROGRESS
+  UNDER_REVIEW
+}
+
+// Don't know it's purpose
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
+}
+
+// for case urgency status
+enum Urgency {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+// don't know what for
+enum ApplicationStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+// For chat communication
+enum MessageRole {
+  USER
+  LAWYER
+}
+
+//for lawyer profile settings
+enum Visibility {
+  PUBLIC
+  UNLISTED
+  PRIVATE
+}
+
+// For blog posts
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+/**
+ * ================
+ * Core Accounts
+ * ===============
+ */
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  imageUrl  String?
 }
