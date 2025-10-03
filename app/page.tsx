@@ -38,6 +38,7 @@ export default function HomePage() {
               Join LexConnect to find meaningful pro bono opportunities, share legal insights, and build lasting
               professional relationships in the legal community.
             </p>
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Button size="lg" asChild className="text-lg px-8">
                 <Link href="/register">
@@ -70,7 +71,7 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 bg-card/30">
+      <section className="py-24 bg-card/30 ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">Everything You Need to Advance Your Legal Career</h2>
