@@ -112,13 +112,13 @@ model User {
   // Right now, if User role == USER, then he will only see above fields in his Profile, but if User role == LAWYER, then below fields will apply including LawyerProfile sub-fields
 
   // Profile and expertise
-  profile       LawyerProfile?
-  verifications Verification[]
-  // certifications Certifications[]
-  educations    Education[]
-  experiences   WorkExperience[]
-  skills        UserSkill[]
-  practiceAreas UserPracticeArea[]
+  profile        LawyerProfile?
+  verifications  Verification[]
+  certifications Certifications[]
+  educations     Education[]
+  experiences    WorkExperience[]
+  skills         UserSkill[]
+  practiceAreas  UserPracticeArea[]
 
   // Networking
   connectionsInitiated Connection[] @relation("connections_initiated")
