@@ -100,46 +100,46 @@ enum PostStatus {
 // A single 'user' model with a 'role' field whose 'enums' are defined above
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  imageUrl  String?
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  role          Role     @default(USER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  image         String?
+  emailVerified Boolean  @default(false)
 
   // Right now, if User role == USER, then he will only see above fields in his Profile, but if User role == LAWYER, then below fields will apply including LawyerProfile sub-fields
 
-  // Profile and expertise
-  profile        LawyerProfile?
-  verifications  Verification[]
-  certifications Certifications[]
-  educations     Education[]
-  experiences    WorkExperience[]
-  skills         UserSkill[]
-  practiceAreas  UserPracticeArea[]
-
-  // Networking
-  connectionsInitiated Connection[] @relation("connections_initiated")
-
-  connectionsReceived Connection[] @relation("connections_received")
-
-  // Cases
-
-  postedCases  Case[]            @relation("PostedCases")
-  applications CaseApplication[]
-  assignments  CaseAssignment[]
-
-  //Content
-
-  blogPosts BlogPost[]
-  comments  Comment[]
-  likes     PostLike[]
-
-  //AI /Documents
-
-  chatSessions ChatSession[]
-  documents    Document[]
+  // Profile and expertise. Right now commente out, make it slowly by seeing dummySchema.txt and deciding what to bring 
+  // and what not to bring.
+  /**
+   * /**
+   * profile        LawyerProfile?
+   * verifications  Verification[]
+   * certifications Certifications[]
+   * educations     Education[]
+   * experiences    WorkExperience[]
+   * skills         UserSkill[]
+   * practiceAreas  UserPracticeArea[]
+   * // Networking
+   * connectionsInitiated Connection[] @relation("connections_initiated")
+   * connectionsReceived Connection[] @relation("connections_received")
+   * // Cases
+   * postedCases  Case[]            @relation("PostedCases")
+   * applications CaseApplication[]
+   * assignments  CaseAssignment[]
+   * //Content
+   * blogPosts BlogPost[]
+   * comments  Comment[]
+   * likes     PostLike[]
+   * //AI /Documents
+   * chatSessions ChatSession[]
+   * documents    Document[]
+   */
+  lawyerProfile LawyerProfile?
+  sessions      Session[]
+  accounts      Account[]
 }
 
 model LawyerProfile {
@@ -173,11 +173,43 @@ model LawyerProfile {
  */
 
 // Specifically for Lawyers, they can select their practice areas during profile setup. Check if you can do practiceArea? to this field in 'User' model.
-model PracticeArea {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-  slug String @unique
+/**
+ * model PracticeArea {
+ * id   Int    @id @default(autoincrement())
+ * name String @unique
+ * slug String @unique
+ * users UserPracticeArea[]
+ * cases CasePracticeArea[]
+ * }
+ */
 
-  users UserPracticeArea[]
-  cases CasePracticeArea[]
+//Below  Session Model & Account model are Required/Expected by Better-Auth for working properly.
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                   String    @id @default(cuid())
+  userId               String
+  accountId            String
+  providerId           String
+  accessToken          String?
+  refreshToken         String?
+  accessTokenExpiresAt DateTime?
+  password             String?
+  createdAt            DateTime  @default(now())
+  updateAt             DateTime  @updatedAt
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([providerId])
 }
