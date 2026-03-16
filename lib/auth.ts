@@ -24,6 +24,22 @@ export const auth = betterAuth({
         enabled:true,
     },
 
+    // User block, which tells better-auth about custom fields that i'm adding in User model in our Schema.(Sak)
+
+    user:{
+        additionalFields:{
+            phoneNo:{
+                type:"string",
+                required:false,
+            },
+
+            /*role:{
+                type:"string",
+                required:false,
+            }*/
+        }
+    },
+
     /* CAN ADD SSO OPTIONS AS WELL */
     baseURL: process.env.BETTER_AUTH_URL,
     

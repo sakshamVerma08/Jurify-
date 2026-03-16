@@ -104,7 +104,7 @@ model User {
   id            String   @id @default(cuid())
   email         String   @unique
   name          String
-  phoneNo       String
+  phoneNo       String?
   role          Role     @default(USER)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -116,6 +116,8 @@ model User {
   // Profile and expertise. Right now commente out, make it slowly by seeing dummySchema.txt and deciding what to bring 
   // and what not to bring.
   /**
+   * /**
+   * /**
    * /**
    * /**
    * /**
@@ -237,7 +239,7 @@ model Session {
   ipAddress String?
   userAgent String?
   createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("session")
@@ -254,7 +256,7 @@ model Account {
   accessTokenExpiresAt DateTime?
   password             String?
   createdAt            DateTime  @default(now())
-  updateAt             DateTime  @updatedAt
+  updatedAt            DateTime  @updatedAt
   user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
