@@ -104,6 +104,7 @@ model User {
   id            String   @id @default(cuid())
   email         String   @unique
   name          String
+  phoneNo       String
   role          Role     @default(USER)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -131,7 +132,9 @@ model User {
    * connectionsInitiated Connection[] @relation("connections_initiated")
    * connectionsReceived Connection[] @relation("connections_received")
    * // Cases
-   * postedCases  Case[]            @relation("PostedCases")
+   */
+  postedCases   Case[]
+  /**
    * applications CaseApplication[]
    * assignments  CaseAssignment[]
    * //Content
@@ -164,13 +167,47 @@ model LawyerProfile {
   website               String?
   linkedinUrl           String?
   createdAt             DateTime @default(now())
-  updateAt              DateTime @updatedAt
+  updatedAt             DateTime @updatedAt
   user                  User     @relation(fields: [userId], references: [id])
 
   // Basically, we index the aforementioned columns, so when our db query searches, it can search on this indexed field, which improves our query performance.
 
   @@index([yearsOfExperience])
   @@index([isAvailableForProBono])
+}
+
+model Case {
+  id             String     @id @default(cuid())
+  title          String
+  description    String
+  postedByUser   String // This is a Foreign Key.
+  postedBy       User       @relation(fields: [postedByUser], references: [id]) // This is a Prisma navigation field, this uses
+  // 'postedByUser' to locate the actual User who posted the Case.
+  status         CaseStatus @default(OPEN)
+  urgency        Urgency    @default(MEDIUM)
+  location       String
+  proBono        Boolean    @default(false) // denotes whether a case is proBono category or not.
+  paid           Boolean    @default(true) // denotes whether a case is paid or not.
+  remoteAllowed  Boolean    @default(true)
+  estimatedHours Int?
+
+  // Contact details of user who posted the case.
+  contactName  String
+  contactPhone String
+  contactEmail String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  /**
+   * /*applications   CaseApplication[]
+   * assignments    CaseAssignment[]
+   * practiceAreas  CasePracticeArea[]
+   * requiredSkills CaseRequiredSkill[]
+   */
+
+  @@index([status])
+  @@index([urgency])
+  @@index([createdAt])
 }
 
 /**
@@ -211,8 +248,9 @@ model Account {
   userId               String
   accountId            String
   providerId           String
-  accessToken          String?
-  refreshToken         String?
+  accessToken          String?   @db.Text
+  idToken              String?   @db.Text
+  refreshToken         String?   @db.Text
   accessTokenExpiresAt DateTime?
   password             String?
   createdAt            DateTime  @default(now())
@@ -222,4 +260,15 @@ model Account {
   @@index([userId])
   @@index([providerId])
   @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verification")
 }

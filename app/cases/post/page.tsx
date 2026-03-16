@@ -52,10 +52,10 @@ export default function PostCasePage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Detailed Description *</Label>
+                <Label htmlFor="description">Provide your side of the Case *</Label>
                 <Textarea
                   id="description"
-                  placeholder="Provide a comprehensive description of the case, client needs, and what the volunteer will be doing..."
+                  placeholder="Replace me..."
                   className="min-h-[150px]"
                   required
                 />

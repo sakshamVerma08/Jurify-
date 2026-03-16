@@ -296,29 +296,6 @@ model Connection {
  * =========================
  */
 
-model Case {
-    id             String     @id @default(cuid())
-    title          String
-    description    String
-    postedById     String
-    status         CaseStatus @default(OPEN)
-    urgency        Urgency    @default(MEDIUM)
-    location       String?
-    remoteAllowed  Boolean    @default(true)
-    estimatedHours Int?
-    createdAt      DateTime   @default(now())
-    updatedAt      DateTime   @updatedAt
-
-    postedBy       User                @relation("PostedCases", fields: [postedById], references: [id])
-    applications   CaseApplication[]
-    assignments    CaseAssignment[]
-    practiceAreas  CasePracticeArea[]
-    requiredSkills CaseRequiredSkill[]
-
-    @@index([status])
-    @@index([urgency])
-    @@index([createdAt])
-}
 
 model CaseApplication {
     id          String            @id @default(cuid())

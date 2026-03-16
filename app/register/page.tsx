@@ -1,8 +1,16 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { ArrowRight, Scale, Eye, EyeOff, Shield, Users, Briefcase } from "lucide-react";
 
+interface RegisterFormData{
+
+  name: string;
+  email: string;
+  password: string;
+};
+
+type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 export default function Register() {
   const [formData, setFormData] = useState({
     name: "",
@@ -11,9 +19,9 @@ export default function Register() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<boolean|string|null>("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: InputChangeEvent) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setError("");
   };
@@ -41,7 +49,7 @@ export default function Register() {
           setIsLoading(false);
         },
       }
-    );
+    );  
   };
 
   return (

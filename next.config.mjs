@@ -9,6 +9,13 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-}
 
-export default nextConfig
+  turbopack: {
+    resolveAlias: {
+      "@prisma/client-runtime-utils":
+        "./node_modules/@prisma/client-runtime-utils",
+    },
+  },
+};
+
+export default nextConfig;
