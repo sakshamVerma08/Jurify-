@@ -47,7 +47,7 @@ export function Navigation() {
               <Link href="/login">Sign In</Link>
             </Button>
             <Button asChild>
-              <Link href="/register">Join LexConnect</Link>
+              <Link href="/auth">Join LexConnect</Link>
             </Button>
           </div>
 
@@ -74,10 +74,10 @@ export function Navigation() {
               ))}
               <div className="flex flex-col space-y-2 pt-4 border-t border-border">
                 <Button variant="ghost" asChild>
-                  <Link href="/login">Sign In</Link>
+                  <Link href="/auth">Sign In</Link>
                 </Button>
                 <Button asChild>
-                  <Link href="/register">Join LexConnect</Link>
+                  <Link href="/auth">Join LexConnect</Link>
                 </Button>
               </div>
             </div>

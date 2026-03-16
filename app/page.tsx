@@ -41,7 +41,7 @@ export default function HomePage() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Button size="lg" asChild className="text-lg px-8">
-                <Link href="/register">
+                <Link href="/auth">
                   Start Your Legal Journey
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>

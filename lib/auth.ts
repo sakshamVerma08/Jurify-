@@ -29,6 +29,7 @@ export const auth = betterAuth({
 
     // User block, which tells better-auth about custom fields that i'm adding in User model in our Schema.(Sak)
 
+    /* ADD NODEMAILER CODE HERE, so that actual verification email can be sent to the user's mail ID"*/
     user:{
         additionalFields:{
             phoneNo:{
