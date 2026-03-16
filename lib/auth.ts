@@ -20,8 +20,11 @@ export const auth = betterAuth({
         provider:"postgresql"
     }),
 
+    trustedOrigins:["http://localhost:3000"],
+
     emailAndPassword:{
         enabled:true,
+        requireEmailVerification:false,
     },
 
     // User block, which tells better-auth about custom fields that i'm adding in User model in our Schema.(Sak)
@@ -32,11 +35,6 @@ export const auth = betterAuth({
                 type:"string",
                 required:false,
             },
-
-            /*role:{
-                type:"string",
-                required:false,
-            }*/
         }
     },
 
