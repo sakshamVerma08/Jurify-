@@ -37,14 +37,34 @@ enum VerificationStatus {
   EXPIRED
 }
 
+//for case category
+enum CaseCategory {
+  FAMILY_LAW
+  CRIMINAL_LAW
+  CIVIL_LAW
+  CORPORATE_LAW
+  PROPERTY_LAW
+  LABOR_LAW
+  TAX_LAW
+  INTELLECTUAL_PROPERTY_LAW
+  CONSTITUTIONAL_LAW
+  ENVIRONMENTAL_LAW
+  IMMIGRATION_LAW
+  BANKING_LAW
+  CYBER_LAW
+}
+
+
 // for case status
-enum CaseStatus {
-  OPEN
-  ASSIGNED
-  COMPLETED
-  CANCELLED
-  IN_PROGRESS
-  UNDER_REVIEW
+enum CaseStage {
+  INITIAL_CONSULTATION
+  INVESTIGATION
+  FILING
+  HEARING
+  TRIAL
+  JUDGMENT
+  APPEAL
+  CLOSED
 }
 
 // Don't know it's purpose
@@ -180,36 +200,42 @@ model LawyerProfile {
 }
 
 model Case {
-  id             String     @id @default(cuid())
-  title          String
-  description    String
+  id             String     @id @default(cuid())//This will be our primary key.
+  title          String     @db.VarChar(255)
+  description    String     @db.Text
+
+  //We will store only city,state and country of the case location,it will ensure that we can find the lawyers in that location and 
+  //keep the full address private for security and privacy reasons.If required full address can be shared later to the lawyers itself through chats.
+  city    String @db.VarChar(100)
+  state   String @db.VarChar(100)
+  country String @db.VarChar(100) @default("India")
   postedByUser   String // This is a Foreign Key.
   postedBy       User       @relation(fields: [postedByUser], references: [id]) // This is a Prisma navigation field, this uses
   // 'postedByUser' to locate the actual User who posted the Case.
-  status         CaseStatus @default(OPEN)
+  category       CaseCategory
+  stage          CaseStage @default(INITIAL_CONSULTATION)
+  deadline       DateTime?
   urgency        Urgency    @default(MEDIUM)
-  location       String
   proBono        Boolean    @default(false) // denotes whether a case is proBono category or not.
-  paid           Boolean    @default(true) // denotes whether a case is paid or not.
-  remoteAllowed  Boolean    @default(true)
-  estimatedHours Int?
 
-  // Contact details of user who posted the case.
-  contactName  String
-  contactPhone String
-  contactEmail String
-
+  //opposing party details
+  opposingName         String?    @db.VarChar(100)
+  opposingRelationship String?    @db.VarChar(100)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  /**
-   * /*applications   CaseApplication[]
-   * assignments    CaseAssignment[]
-   * practiceAreas  CasePracticeArea[]
-   * requiredSkills CaseRequiredSkill[]
-   */
+  deletedAt DateTime? //for soft delete, becuase we shouldn't delete the cases permanently.
 
-  @@index([status])
-  @@index([urgency])
+
+  //Need to add caseAssignments/Assignment tracking for lawyers.
+  @@index([postedByUser])
+  @@index([category])
+  @@index([stage])
+  @@index([deletedAt])
+  @@index([city, state])
+  @@index([state, category])
+  @@index([category, stage])
+  @@index([proBono])
+  @@index([deletedAt, category])
   @@index([createdAt])
 }
 
