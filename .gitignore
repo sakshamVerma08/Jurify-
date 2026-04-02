@@ -31,9 +31,9 @@ next-env.d.ts
 /generated/prisma
 
 #Python Services
-__pycache__/
+python-services/__pycache__/
 *.pyc
 
 #Virtual Environment (Python)
-venv	
-
+python-serivces/venv	
+python-services/
