@@ -29,3 +29,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 /generated/prisma
+
+#Python Services
+__pycache__/
+*.pyc
+
+#Virtual Environment (Python)
+venv	
+
