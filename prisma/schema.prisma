@@ -2,11 +2,11 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL_DEVELOPMENT")
 }
 
 /**
@@ -37,14 +37,34 @@ enum VerificationStatus {
   EXPIRED
 }
 
+//for case category
+enum CaseCategory {
+  FAMILY_LAW
+  CRIMINAL_LAW
+  CIVIL_LAW
+  CORPORATE_LAW
+  PROPERTY_LAW
+  LABOR_LAW
+  TAX_LAW
+  INTELLECTUAL_PROPERTY_LAW
+  CONSTITUTIONAL_LAW
+  ENVIRONMENTAL_LAW
+  IMMIGRATION_LAW
+  BANKING_LAW
+  CYBER_LAW
+}
+
+
 // for case status
-enum CaseStatus {
-  OPEN
-  ASSIGNED
-  COMPLETED
-  CANCELLED
-  IN_PROGRESS
-  UNDER_REVIEW
+enum CaseStage {
+  INITIAL_CONSULTATION
+  INVESTIGATION
+  FILING
+  HEARING
+  TRIAL
+  JUDGMENT
+  APPEAL
+  CLOSED
 }
 
 // Don't know it's purpose
@@ -101,46 +121,58 @@ enum PostStatus {
 // A single 'user' model with a 'role' field whose 'enums' are defined above
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  imageUrl  String?
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  phoneNo       String?
+  role          Role     @default(USER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  image         String?
+  emailVerified Boolean  @default(false)
 
   // Right now, if User role == USER, then he will only see above fields in his Profile, but if User role == LAWYER, then below fields will apply including LawyerProfile sub-fields
 
-  // Profile and expertise
-  profile        LawyerProfile?
-  verifications  Verification[]
-  certifications Certifications[]
-  educations     Education[]
-  experiences    WorkExperience[]
-  skills         UserSkill[]
-  practiceAreas  UserPracticeArea[]
+  // Profile and expertise. Right now commente out, make it slowly by seeing dummySchema.txt and deciding what to bring 
+  // and what not to bring.
+  /**
+   * /**
+   * /**
+   * /**
+   * /**
+   * /**
+   * /**
+   * /**
+   * /**
+   * profile        LawyerProfile?
+   * verifications  Verification[]
+   * certifications Certifications[]
+   * educations     Education[]
+   * experiences    WorkExperience[]
+   * skills         UserSkill[]
+   * practiceAreas  UserPracticeArea[]
+   * // Networking
+   * connectionsInitiated Connection[] @relation("connections_initiated")
+   * connectionsReceived Connection[] @relation("connections_received")
+   * // Cases
+   */
+  postedCases   Case[]
+  /**
+   * applications CaseApplication[]
+   * assignments  CaseAssignment[]
+   * //Content
+   * blogPosts BlogPost[]
+   * comments  Comment[]
+   * likes     PostLike[]
+   * //AI /Documents
+   * chatSessions ChatSession[]
+   * documents    Document[]
+   */
+  lawyerProfile LawyerProfile?
+  sessions      Session[]
+  accounts      Account[]
 
-  // Networking
-  connectionsInitiated Connection[] @relation("connections_initiated")
-
-  connectionsReceived Connection[] @relation("connections_received")
-
-  // Cases
-
-  postedCases  Case[]            @relation("PostedCases")
-  applications CaseApplication[]
-  assignments  CaseAssignment[]
-
-  //Content
-
-  blogPosts BlogPost[]
-  comments  Comment[]
-  likes     PostLike[]
-
-  //AI /Documents
-
-  chatSessions ChatSession[]
-  documents    Document[]
+  @@map("user")
 }
 
 model LawyerProfile {
@@ -167,6 +199,46 @@ model LawyerProfile {
   @@index([isAvailableForProBono])
 }
 
+model Case {
+  id             String     @id @default(cuid())//This will be our primary key.
+  title          String     @db.VarChar(255)
+  description    String     @db.Text
+
+  //We will store only city,state and country of the case location,it will ensure that we can find the lawyers in that location and 
+  //keep the full address private for security and privacy reasons.If required full address can be shared later to the lawyers itself through chats.
+  city    String @db.VarChar(100)
+  state   String @db.VarChar(100)
+  country String @db.VarChar(100) @default("India")
+  postedByUser   String // This is a Foreign Key.
+  postedBy       User       @relation(fields: [postedByUser], references: [id]) // This is a Prisma navigation field, this uses
+  // 'postedByUser' to locate the actual User who posted the Case.
+  category       CaseCategory
+  stage          CaseStage @default(INITIAL_CONSULTATION)
+  deadline       DateTime?
+  urgency        Urgency    @default(MEDIUM)
+  proBono        Boolean    @default(false) // denotes whether a case is proBono category or not.
+
+  //opposing party details
+  opposingName         String?    @db.VarChar(100)
+  opposingRelationship String?    @db.VarChar(100)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime? //for soft delete, becuase we shouldn't delete the cases permanently.
+
+
+  //Need to add caseAssignments/Assignment tracking for lawyers.
+  @@index([postedByUser])
+  @@index([category])
+  @@index([stage])
+  @@index([deletedAt])
+  @@index([city, state])
+  @@index([state, category])
+  @@index([category, stage])
+  @@index([proBono])
+  @@index([deletedAt, category])
+  @@index([createdAt])
+}
+
 /**
  * ==================
  * Expertise: Practice Areas & Skills
@@ -174,11 +246,59 @@ model LawyerProfile {
  */
 
 // Specifically for Lawyers, they can select their practice areas during profile setup. Check if you can do practiceArea? to this field in 'User' model.
-model PracticeArea {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-  slug String @unique
+/**
+ * model PracticeArea {
+ * id   Int    @id @default(autoincrement())
+ * name String @unique
+ * slug String @unique
+ * users UserPracticeArea[]
+ * cases CasePracticeArea[]
+ * }
+ */
 
-  users UserPracticeArea[]
-  cases CasePracticeArea[]
+//Below  Session Model & Account model are Required/Expected by Better-Auth for working properly.
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                   String    @id @default(cuid())
+  userId               String
+  accountId            String
+  providerId           String
+  accessToken          String?   @db.Text
+  idToken              String?   @db.Text
+  refreshToken         String?   @db.Text
+  accessTokenExpiresAt DateTime?
+  scope                String?
+  password             String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([providerId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verification")
 }

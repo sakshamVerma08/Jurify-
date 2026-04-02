@@ -52,10 +52,10 @@ export default function PostCasePage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Detailed Description *</Label>
+                <Label htmlFor="description">Explain what happened in Chronological Order *</Label>
                 <Textarea
                   id="description"
-                  placeholder="Provide a comprehensive description of the case, client needs, and what the volunteer will be doing..."
+                  placeholder="Replace me..."
                   className="min-h-[150px]"
                   required
                 />
@@ -74,7 +74,7 @@ export default function PostCasePage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="practiceArea">Practice Area *</Label>
+                  
                   <Select required>
                     <SelectTrigger>
                       <SelectValue placeholder="Select practice area" />
