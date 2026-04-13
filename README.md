@@ -1,372 +1,229 @@
-# ⚖️ LexConnect - Legal Services Marketplace
-
 <div align="center">
 
-![LexConnect Banner](./assets/banner.png)
+# ⚖️ Jurify
 
-### 🏆 Winner of LexHacks 1.0
+### Legal Networking & AI-Powered Legal Assistant Platform
 
-**A LinkedIn for Lawyers meets AI-Powered Legal Assistant**
+**��� Winner — LexConnect 1.0 Hackathon, Bennett University**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](https://nodejs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?logo=mongodb&logoColor=white)](https://www.mongodb.com/)
-[![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Made with Love](https://img.shields.io/badge/Made%20with-❤️-red?style=flat-square)](https://github.com)
+[![Hackathon Winner](https://img.shields.io/badge/LexConnect%201.0-Winner%20���-gold?style=flat-square)](https://github.com)
+[![RAG Powered](https://img.shields.io/badge/AI-RAG%20Powered-blueviolet?style=flat-square)](https://github.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
-[Demo](#demo) • [Features](#features) • [Installation](#installation) • [Screenshots](#screenshots) • [Contributing](#contributing)
+*Breaking legal barriers — one document at a time.*
 
 </div>
 
 ---
 
-## 📖 About
+## ��� Overview
 
-LexConnect is a comprehensive legal services platform that bridges the gap between legal professionals and clients while making legal services more accessible and understandable. The platform combines professional networking features similar to LinkedIn with an intelligent AI assistant that simplifies complex legal documents for non-legal professionals.
+**Jurify** is a full-stack legal-tech platform that serves two distinct audiences:
 
-Whether you're a lawyer looking to offer pro bono services, a legal professional seeking to network with peers, or someone in need of legal assistance, LexConnect provides the tools and community to connect, collaborate, and communicate effectively.
+- **Lawyers & Legal Professionals** — A LinkedIn-style networking space where lawyers can build their profiles, connect with peers, gain early-career experience, and take up ProBono cases to give back to society.
+- **Non-Legal Users** — An AI-powered legal document assistant that helps everyday people — farmers, daily wage workers, small business owners — understand complex legal jargon in plain, simple language, completely **free of cost**.
 
-## ✨ Key Features
+> *The legal system is for everyone. Jurify makes sure everyone can actually understand it.*
 
-### 🤖 AI-Powered Document Simplification
-- Upload complex legal documents and receive plain-language explanations
-- AI chatbot breaks down legal jargon into understandable terms
-- Perfect for clients without legal backgrounds
+---
 
-### 👥 Professional Networking
-- LinkedIn-style profiles for lawyers
-- Showcase specializations, experience, and credentials
-- Build your professional legal network
+## ��� Core Features
 
-### 💼 Service Marketplace
-- **Pro Bono Services**: Connect with lawyers offering free legal assistance
-- **Paid Consultations**: Browse and book legal services
-- Category-based search (Family Law, Criminal Law, Corporate Law, etc.)
+### For Lawyers
+- ��� **Professional Networking** — Connect with fellow advocates, find mentors, and collaborate across practice areas.
+- ��� **ProBono Case Listings** — Senior lawyers can list and take up ProBono cases, building reputation while serving the underserved.
+- ��� **Early Career Opportunities** — Junior lawyers can find mentorship, internships, and case experience from experienced advocates.
+- ���️ **Rich Profiles** — Showcase practice areas, bar registration, case history, and achievements.
 
-### 📝 Legal Blog Community
-- Lawyers can share insights, articles, and legal updates
-- Discuss recent judgments and legal developments
-- Comment and engage with the legal community
+### For Non-Legal Users (The AI Assistant)
+- ��� **Legal Document Upload** — Users can upload any legal document (contracts, land records, court notices, FIRs, etc.).
+- ��� **AI-Powered Explanation** — The assistant reads the document and explains legal terms in plain, easy-to-understand language.
+- ��� **RAG-Based Contextual Answers** — Powered by Retrieval Augmented Generation (RAG) so answers are always grounded in the actual document, not hallucinated.
+- ��� **Free & Accessible** — No lawyer needed. No fees. Built for users with no legal background.
 
-### 🔍 Advanced Search & Filtering
-- Filter lawyers by specialization, experience, and rating
-- Location-based search
-- Availability and pricing filters
+---
 
-### ⭐ Rating & Review System
-- Client reviews and ratings for lawyers
-- Build trust through transparent feedback
-- Quality assurance for legal services
+## ��� AI Architecture — How the Legal Assistant Works
 
-### 💬 Real-Time Messaging
-- Direct communication between lawyers and clients
-- Secure and private conversations
-- Case discussion and consultation
+The AI document assistant is the technical centrepiece of Jurify. Here's how it works under the hood:
 
-### 📊 Case Management Dashboard
-- Track ongoing cases
-- Manage client relationships
-- Monitor pro bono commitments
+```
+User Uploads Document
+        │
+        ▼
+┌─────────────────────┐
+│  Document Parsing   │  ← PDF / DOCX extraction
+└─────────────────────┘
+        │
+        ▼
+┌─────────────────────┐
+│  Text Chunking      │  ← Split into semantic chunks
+└─────────────────────┘
+        │
+        ▼
+┌─────────────────────┐
+│  Embedding Model    │  ← Generate vector embeddings
+└─────────────────────┘
+        │
+        ▼
+┌─────────────────────┐
+│  Vector Database    │  ← Store embeddings (Pinecone / ChromaDB)
+└─────────────────────┘
+        │
+   User asks question
+        │
+        ▼
+┌─────────────────────┐
+│  Semantic Search    │  ← Retrieve top-k relevant chunks
+└─────────────────────┘
+        │
+        ▼
+┌─────────────────────┐
+│  LLM + RAG Prompt   │  ← Inject context + user query
+└─────────────────────┘
+        │
+        ▼
+   Plain-Language Answer
+```
 
-## 🎬 Demo
+### Why RAG?
 
-![Demo GIF](./assets/demo.gif)
+A vanilla LLM would answer from its training data — which is dangerous for legal queries. With RAG:
 
-[Live Demo Link](#) | [Video Walkthrough](#)
+- Responses are **strictly anchored** to the uploaded document.
+- **Hallucination risk is minimised** — critical for legal accuracy.
+- The model explains *your specific document*, not generic legal theory.
+- Works across **multiple Indian legal domains** — property law, labour law, consumer protection, criminal law, etc.
 
-## 📸 Screenshots
+---
 
-<div align="center">
+## ���️ Tech Stack
 
-### AI Document Simplification
-![AI Assistant](./assets/ai-assistant.png)
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js / React |
+| Backend | Node.js / Express |
+| Authentication | JWT / OAuth |
+| AI / LLM | Anthropic Claude API / OpenAI API |
+| Embeddings | OpenAI `text-embedding-ada-002` |
+| Vector Store | Pinecone / ChromaDB |
+| Document Parsing | LangChain document loaders |
+| Database | PostgreSQL / MongoDB |
+| Storage | AWS S3 / Cloudinary |
 
-### Legal Blog
-![Blog Section](./assets/blog.png)
+---
 
-</div>
-
-## 🛠️ Tech Stack
-
-### Frontend
-- **Next.js** - React framework with SSR/SSG
-- **React.js** - UI library
-- **Material-UI (MUI)** - Component library
-- **Redux/Context API** - State management
-- **Axios** - HTTP client
-
-### Backend
-- **Node.js** - Runtime environment
-- **Express.js** - Web framework
-- **PostgreSQL** - Relational database
-- **Prisma/Sequelize** - ORM
-- **JWT** - Authentication
-- **Socket.io** - Real-time messaging
-
-### AI Integration
-- **OpenAI API / Custom NLP Model** - Document simplification
-- **Natural Language Processing** - Legal text analysis
-
-### Additional Tools
-- **Multer** - File upload handling
-- **Cloudinary** - Image storage
-- **bcrypt** - Password hashing
-- **dotenv** - Environment variables
-
-## 🚀 Getting Started
+## ��� Getting Started
 
 ### Prerequisites
 
-Before you begin, ensure you have the following installed:
-- **Node.js** (v16.0.0 or higher)
-- **MongoDB** (v4.4 or higher)
-- **npm** or **yarn**
-- **Git**
+- Node.js >= 18
+- Python >= 3.10 (for embedding pipeline)
+- API keys: Anthropic or OpenAI, Pinecone
 
 ### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/lexconnect.git
-   cd lexconnect
-   ```
+```bash
+# Clone the repo
+git clone https://github.com/yourusername/jurify.git
+cd jurify
 
-2. **Install backend dependencies**
-   ```bash
-   cd backend
-   npm install
-   ```
+# Install dependencies
+npm install
 
-3. **Install frontend dependencies**
-   ```bash
-   cd ../frontend
-   npm install
-   ```
-
-4. **Set up environment variables**
-
-   Create a `.env` file in the `backend` directory:
-   ```env
-   # Server Configuration
-   PORT=5000
-   NODE_ENV=development
-
-   # Database
-   MONGODB_URI=mongodb://localhost:27017/lexconnect
-   
-   # JWT Secret
-   JWT_SECRET=your_jwt_secret_key_here
-   JWT_EXPIRE=7d
-   
-   # AI API (OpenAI or your custom API)
-   AI_API_KEY=your_openai_api_key
-   AI_API_URL=https://api.openai.com/v1
-   
-   # Cloudinary (for image uploads)
-   CLOUDINARY_CLOUD_NAME=your_cloud_name
-   CLOUDINARY_API_KEY=your_api_key
-   CLOUDINARY_API_SECRET=your_api_secret
-   
-   # Email Configuration (optional)
-   EMAIL_SERVICE=gmail
-   EMAIL_USER=your_email@gmail.com
-   EMAIL_PASSWORD=your_email_password
-   
-   # Frontend URL
-   CLIENT_URL=http://localhost:3000
-   ```
-
-   Create a `.env` file in the `frontend` directory:
-   ```env
-   REACT_APP_API_URL=http://localhost:5000/api
-   REACT_APP_SOCKET_URL=http://localhost:5000
-   ```
-
-5. **Start MongoDB**
-   ```bash
-   # For macOS/Linux
-   mongod
-   
-   # For Windows
-   # Start MongoDB service from Services or run:
-   "C:\Program Files\MongoDB\Server\{version}\bin\mongod.exe"
-   ```
-
-6. **Run the application**
-
-   **Backend:**
-   ```bash
-   cd backend
-   npm run dev
-   ```
-
-   **Frontend:**
-   ```bash
-   cd frontend
-   npm start
-   ```
-
-7. **Access the application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:5000
-
-## 📁 Project Structure
-
-```
-lexconnect/
-├── backend/
-│   ├── config/
-│   │   └── db.js
-│   ├── controllers/
-│   │   ├── authController.js
-│   │   ├── lawyerController.js
-│   │   ├── caseController.js
-│   │   ├── blogController.js
-│   │   └── aiController.js
-│   ├── models/
-│   │   ├── User.js
-│   │   ├── Lawyer.js
-│   │   ├── Case.js
-│   │   ├── Blog.js
-│   │   └── Message.js
-│   ├── routes/
-│   │   ├── auth.js
-│   │   ├── lawyers.js
-│   │   ├── cases.js
-│   │   ├── blogs.js
-│   │   └── ai.js
-│   ├── middleware/
-│   │   ├── auth.js
-│   │   └── upload.js
-│   ├── utils/
-│   │   └── aiService.js
-│   └── server.js
-│
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Auth/
-│   │   │   ├── Lawyer/
-│   │   │   ├── Blog/
-│   │   │   ├── AI/
-│   │   │   └── Common/
-│   │   ├── pages/
-│   │   │   ├── Home.jsx
-│   │   │   ├── LawyerProfile.jsx
-│   │   │   ├── Marketplace.jsx
-│   │   │   ├── Blog.jsx
-│   │   │   └── Dashboard.jsx
-│   │   ├── context/
-│   │   ├── services/
-│   │   ├── utils/
-│   │   ├── App.js
-│   │   └── index.js
-│   └── package.json
-│
-└── assets/
-    └── (screenshots and images)
+# Set up environment variables
+cp .env.example .env
 ```
 
-## 🎯 Usage
+### Environment Variables
 
-### For Lawyers
+```env
+# LLM
+ANTHROPIC_API_KEY=your_key_here
+OPENAI_API_KEY=your_key_here
 
-1. **Create Profile**: Sign up and complete your professional profile
-2. **List Services**: Add pro bono or paid service offerings
-3. **Write Blogs**: Share your legal expertise with the community
-4. **Connect**: Network with other legal professionals
-5. **Manage Cases**: Track and manage client cases through the dashboard
+# Vector DB
+PINECONE_API_KEY=your_key_here
+PINECONE_ENVIRONMENT=your_env
 
-### For Clients
+# App
+DATABASE_URL=your_db_url
+JWT_SECRET=your_jwt_secret
+NEXT_PUBLIC_API_URL=http://localhost:3000
+```
 
-1. **Search Lawyers**: Find lawyers by specialization and location
-2. **Use AI Assistant**: Upload legal documents for simplified explanations
-3. **Request Services**: Connect with lawyers for pro bono or paid assistance
-4. **Read Blogs**: Stay informed about legal developments
-5. **Leave Reviews**: Rate and review your experience with lawyers
+### Run Locally
 
-## 🏆 LexHacks 1.0 Recognition
+```bash
+# Development server
+npm run dev
 
-This project was awarded **1st Place at LexHacks 1.0**, recognizing its innovation in:
-- Making legal services more accessible
-- Democratizing legal knowledge through AI
-- Building a supportive legal community
-- Bridging the gap between legal professionals and those in need
+# Build for production
+npm run build
+npm start
+```
 
-## 🤝 Contributing
+---
 
-We welcome contributions to LexConnect! Here's how you can help:
+## ��� Project Structure
 
-1. **Fork the repository**
-2. **Create your feature branch**
-   ```bash
-   git checkout -b feature/AmazingFeature
-   ```
-3. **Commit your changes**
-   ```bash
-   git commit -m 'Add some AmazingFeature'
-   ```
-4. **Push to the branch**
-   ```bash
-   git push origin feature/AmazingFeature
-   ```
-5. **Open a Pull Request**
+```
+jurify/
+├── app/                    # Next.js app directory
+│   ├── (auth)/             # Login, Register
+│   ├── dashboard/          # Lawyer dashboard
+│   ├── legal-assistant/    # AI assistant interface
+│   └── probono/            # ProBono case listings
+├── components/             # Reusable UI components
+├── lib/
+│   ├── ai/
+│   │   ├── embeddings.js   # Embedding generation
+│   │   ├── rag.js          # RAG pipeline
+│   │   └── llm.js          # LLM call handler
+│   ├── db/                 # Database clients
+│   └── vectorstore/        # Pinecone / ChromaDB client
+├── api/                    # API routes
+├── public/                 # Static assets
+└── README.md
+```
 
-### Contribution Guidelines
-- Follow the existing code style
-- Write clear commit messages
-- Update documentation as needed
-- Add tests for new features
-- Ensure all tests pass before submitting PR
+---
 
-## 🐛 Bug Reports
+## ��� Hackathon — LexConnect 1.0
 
-Found a bug? Please open an issue with:
-- Clear description of the bug
-- Steps to reproduce
-- Expected vs actual behavior
-- Screenshots (if applicable)
-- Your environment details
+Jurify won **1st place** at **LexConnect 1.0**, a legal-tech hackathon hosted at **Bennett University**.
 
-## 📋 Roadmap
+The project was recognised for:
+- **Social impact** — directly addressing legal accessibility for underserved communities.
+- **Technical depth** — production-grade RAG implementation for a domain-specific use case.
+- **Product thinking** — dual-sided platform serving both legal professionals and non-legal users.
 
-- [ ] Mobile application (React Native)
-- [ ] Video consultation feature
-- [ ] Multi-language support
-- [ ] Advanced AI features (case prediction, legal research)
-- [ ] Integration with legal databases
-- [ ] Payment gateway integration
-- [ ] Appointment scheduling system
-- [ ] Document template library
+---
 
-## 📄 License
+## ��� Contributing
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Contributions are welcome! Please open an issue first to discuss what you'd like to change.
 
-## 👨‍💻 Author
+```bash
+# Fork the repo, then:
+git checkout -b feature/your-feature-name
+git commit -m "feat: add your feature"
+git push origin feature/your-feature-name
+# Open a Pull Request
+```
 
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
-- Email: your.email@example.com
+---
 
-## 🙏 Acknowledgments
+## ��� License
 
-- Thanks to LexHacks 1.0 organizers and judges
-- OpenAI for AI capabilities
-- The open-source community
-- All contributors and testers
-
-## 📞 Support
-
-For support, email support@lexconnect.com or join our Slack channel.
+Distributed under the MIT License. See [`LICENSE`](LICENSE) for more information.
 
 ---
 
 <div align="center">
 
-**Made with ❤️ and ⚖️ by the LexConnect Team**
-
-⭐ Star this repo if you find it helpful!
+Built with purpose — to make the law accessible to everyone. ⚖️
 
 </div>
+
