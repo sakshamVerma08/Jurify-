@@ -10,3 +10,5 @@ matplotlib
 seaborn
 pypdf
 pymupdf
+pinecone
+sentence-transformers
