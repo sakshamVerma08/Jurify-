@@ -44,8 +44,8 @@ class EmbeddingManager:
         """
 
         instruction = (
-            "Represent this sentence for"
-            "searching relevant passages:"
+             "Represent this sentence for "
+             "searching relevant passages: "
         )
 
         query = instruction + query 
@@ -65,5 +65,3 @@ class EmbeddingManager:
         return self.model.get_embedding_dimension()
 
 
-embedding_manager = EmbeddingManager()
-embedding_manager

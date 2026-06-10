@@ -14,9 +14,7 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence
 
 import numpy as np
 from langchain_core.documents import Document
-
-from .config import settings
-
+import os
 
 def _chunk_id(doc_name: str, idx: int) -> str:
     """Stable, human-readable chunk ID — re-upserting same chunk overwrites it."""
@@ -54,13 +52,13 @@ class PineconeVectorStore:
 
     def __init__(
         self,
-        index_name: str = settings.pinecone_index_name,
-        dimension: int = settings.embedding_dim,
-        namespace: str = settings.pinecone_namespace,
-        metric: str = settings.pinecone_metric,
-        cloud: str = settings.pinecone_cloud,
-        region: str = settings.pinecone_region,
-        api_key: str = settings.pinecone_api_key,
+        index_name: str,
+        dimension: int,
+        api_key: str,
+        namespace: str = "",
+        cloud: str = "aws",
+        region: str = "us-east-1",
+        metric: str = "cosine"
     ):
         # Import here so the rest of the package doesn't require pinecone-client
         # to be installed (useful for unit-testing the chunker in isolation).
@@ -116,7 +114,7 @@ class PineconeVectorStore:
         self,
         chunks: Sequence[Document],
         embeddings: np.ndarray,
-        batch_size: int = settings.upsert_batch_size,
+        batch_size: int = 100
     ) -> int:
         """Upsert a list of (Document, embedding) pairs in batches."""
         if len(chunks) != len(embeddings):
@@ -155,7 +153,7 @@ class PineconeVectorStore:
     def query(
         self,
         embedding: np.ndarray,
-        top_k: int = settings.default_top_k,
+        top_k: int = 5,
         metadata_filter: Optional[Dict[str, Any]] = None,
         include_values: bool = False,
     ) -> List[Dict[str, Any]]:
