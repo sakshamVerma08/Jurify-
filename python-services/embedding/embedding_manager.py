@@ -16,7 +16,7 @@ class EmbeddingManager:
         self.model = SentenceTransformer(model_name)
 
         print(f"Loaded Embedding Model: {model_name}")
-        print(f"Embedding dimension:{self.model.get_sentence_embedding_dimension()}")
+        print(f"Embedding dimension:{self.model.get_embedding_dimension()}")
 
     
     def generate_document_embeddings(
@@ -62,5 +62,8 @@ class EmbeddingManager:
         Returns embedding vector dimension.
         """
 
-        return self.model.sentence_embedding_dimension()
+        return self.model.get_embedding_dimension()
 
+
+embedding_manager = EmbeddingManager()
+embedding_manager
