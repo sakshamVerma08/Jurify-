@@ -1,7 +1,10 @@
+import os, sys
+# Add the project root to PYTHONPATH so sibling packages can be imported
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from embedding.embedding_manager import EmbeddingManager
 from ingestion.ingestion import DocumentIngestion
 from vector_store.vector_store import PineconeVectorStore
-import os 
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -57,6 +60,12 @@ class RAGPipeline:
 
             print(f"Generated {len(embeddings)} embeddings")
 
+            print("\n FIRST 10 CHUNKS METADATA:")
+
+            for i, chunk in enumerate(chunks[:10]):
+                print(f"\nChunk {i}")
+                print(chunk.metadata)
+
 
             # STEP 3: STORE EMBEDDINGS IN VECTOR STORE 
 
@@ -79,7 +88,7 @@ class RAGPipeline:
             
 
 pipeline = RAGPipeline(
-    pdf_directory = "./kaggle_dataset/"
+    pdf_directory = "../kaggle_dataset/"
 )  
 
 pipeline.run()

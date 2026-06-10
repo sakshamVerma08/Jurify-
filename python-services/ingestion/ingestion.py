@@ -1,6 +1,7 @@
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pathlib import Path
+from collections import defaultdict
 import re
 import os 
 
@@ -65,6 +66,8 @@ class DocumentIngestion:
         )
 
         split_docs = []
+        doc_chunk_counter = defaultdict(int)
+
 
         for doc in documents:
 
@@ -83,8 +86,31 @@ class DocumentIngestion:
                     metadatas = [doc.metadata]
                 )
 
+                for chunk in chunks:
+
+                    doc_name = chunk.metadata.get(
+                        "source_file",
+                        "unknown"
+                    )
+
+                    chunk.metadata["document_name"] = doc_name 
+
+                    chunk.metadata["chunk_index_in_doc"] = (
+                        doc_chunk_counter[doc_name]
+                    )
+
+                    doc_chunk_counter[doc_name] += 1
 
                 split_docs.extend(chunks)
+
+
+        print("\nSample metadata:")
+
+        for chunk in split_docs[:10]:
+            print(
+                chunk.metadata["document_name"],
+                chunk.metadata["chunk_index_in_doc"]
+            )
 
         return split_docs 
 

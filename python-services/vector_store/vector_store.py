@@ -66,7 +66,7 @@ class PineconeVectorStore:
 
         if not api_key:
             raise RuntimeError(
-                "PINECONE_API_KEY is not set. Add it to your .env file."
+                "PINECONE_DB_KEY is not set. Add it to your .env file."
             )
 
         self.index_name = index_name
@@ -122,18 +122,25 @@ class PineconeVectorStore:
                 f"Mismatch: {len(chunks)} chunks vs {len(embeddings)} embeddings"
             )
 
+      
         print(f"Upserting {len(chunks)} vectors into '{self.index_name}'...")
+
         vectors: List[Dict[str, Any]] = []
+
         for chunk, emb in zip(chunks, embeddings):
             doc_name = chunk.metadata.get("document_name", "unknown")
             idx = chunk.metadata.get("chunk_index_in_doc", 0)
             vid = _chunk_id(doc_name, idx)
+
+            print(doc_name,idx) 
+            
 
             # Persist the chunk text in metadata so retrieval can return it
             # without a second lookup. Pinecone metadata is ~40KB per vector;
             # our 2200-char chunks fit comfortably.
             md = _sanitize_metadata({**chunk.metadata, "text": chunk.page_content})
 
+            print("VECTOR ID: ", vid)
             vectors.append({"id": vid, "values": emb.tolist(), "metadata": md})
 
         total = 0
