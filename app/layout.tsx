@@ -1,16 +1,14 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
-import { Analytics } from "@vercel/analytics/next"
-import "./globals.css"
-import { Suspense } from "react"
+import type { Metadata } from 'next'
+import { cormorant, outfit } from '@/app/fonts'
+import './globals.css'
 
 export const metadata: Metadata = {
-  title: "LexConnect - Professional Legal Network",
+  title: 'Jurify — Professional Legal Network for India',
   description:
-    "Connect, collaborate, and grow in the legal profession. Find pro bono opportunities, share insights, and build your legal career.",
-  generator: "LexConnect",
+    'Connect with verified lawyers, discover pro bono opportunities, and use AI-powered legal assistance on India\'s professional legal network.',
+  icons: {
+    icon: '/logo.svg',
+  },
 }
 
 export default function RootLayout({
@@ -19,13 +17,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
-        <Suspense>
-          {children}
-          <Analytics />
-        </Suspense>
-      </body>
+    <html lang="en" className={`${outfit.variable} ${cormorant.variable}`} data-scroll-behavior="smooth">
+      <body className="min-h-screen font-sans antialiased">{children}</body>
     </html>
   )
 }
