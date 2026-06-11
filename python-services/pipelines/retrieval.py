@@ -63,8 +63,7 @@ class LegalRetriever:
         
 
     # Retrieval + Same-Document Neighbor Expansion 
-    # Basically, in Neighbor Expansion we retrieve the adjacent chunks of the original retrieved chunk to preserve the partial context present in adjacent chunks.
-
+    # Basically, in Neighbor Expansion we retrieve the adjacent chunks of the original retrieved chunk to preserve the partial context present in adjacent chunk
     # For example: [chunk 0, chunk 1, chunk 2]
     #                            ^ 
     #                            |__ original retrieved chunk
