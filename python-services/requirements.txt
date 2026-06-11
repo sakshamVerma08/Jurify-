@@ -2,4 +2,13 @@ python-dotenv
 fastapi
 uvicorn
 langchain
+langchain-community
 langchain-groq
+pandas
+numpy
+matplotlib
+seaborn
+pypdf
+pymupdf
+pinecone
+sentence-transformers

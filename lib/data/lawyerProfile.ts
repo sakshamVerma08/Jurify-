@@ -1,0 +1,143 @@
+import type { LawyerProfile } from '@/types'
+
+export const LAWYER_PROFILE: LawyerProfile = {
+  id: 'priya-mehta',
+  initials: 'PM',
+  name: 'Advocate Priya Mehta',
+  degree: 'LLB (Hons.) · Delhi High Court Advocate',
+  practiceAreas: ['Family Law', 'Civil Rights', 'Criminal Law'],
+  location: 'New Delhi, India',
+  languages: 'English · Hindi',
+  rating: 4.9,
+  experienceYears: 8,
+  connections: 145,
+  proBonoAvailable: true,
+  bio: [
+    'Advocate Priya Mehta is a Senior Advocate at the Delhi High Court with 8 years of focused practice in family law, civil rights, and criminal defence. She completed her LLB (Hons.) from the Faculty of Law, University of Delhi in 2015 and was enrolled with the Bar Council of Delhi in 2016.',
+    'Priya is deeply committed to accessible justice. Over the past 4 years, she has dedicated over 240 hours to pro bono representation for women and children in domestic violence cases, custody disputes, and civil rights violations. She believes the law must work equally for everyone — regardless of their ability to pay.',
+    'She regularly speaks at legal aid clinics across Delhi NCR and is a member of the Delhi Legal Aid Committee. She is fluent in English and Hindi and conducts proceedings comfortably in both languages.',
+  ],
+  videoLabel: "▶ Watch Priya's 60-second introduction · Click to play",
+  credentials: [
+    { label: 'Bar Council Enrollment', value: 'D/4821/2016', sub: 'Bar Council of Delhi · Active' },
+    { label: 'Primary Court', value: 'Delhi High Court', sub: 'Also practices in District Courts & Supreme Court' },
+    { label: 'Academic Degree', value: 'LLB (Hons.) · 2015', sub: 'Faculty of Law, University of Delhi' },
+    { label: 'Additional Qualification', value: 'PG Diploma — Family Law', sub: 'National Law School of India University · 2017' },
+  ],
+  practiceTags: [
+    'Family Law',
+    'Civil Rights',
+    'Criminal Law',
+    'Domestic Violence',
+    'Child Custody',
+    'Property Disputes',
+  ],
+  stats: [
+    { id: 'success', type: 'circle', label: 'Success Rate', sub: '87 of 92 cases won', value: 94, circlePct: 94 },
+    { id: 'cases', type: 'counter', label: 'Cases Handled', sub: 'Across 5 court levels', value: 92 },
+    { id: 'probono', type: 'counter', label: 'Pro Bono Hours', sub: 'Free legal service', value: 240, suffix: 'h' },
+    { id: 'experience', type: 'counter', label: 'Years Experience', sub: 'Enrolled 2016', value: 8, suffix: 'y' },
+  ],
+  ratingBars: [
+    { stars: 5, pct: 88, count: 21 },
+    { stars: 4, pct: 10, count: 2 },
+    { stars: 3, pct: 4, count: 1 },
+    { stars: 2, pct: 0, count: 0 },
+    { stars: 1, pct: 0, count: 0 },
+  ],
+  reviewCount: 24,
+  testimonials: [
+    {
+      id: 't1',
+      authorInitial: 'S',
+      authorName: 'Sunita Rawat',
+      caseLabel: 'Child Custody · Delhi HC',
+      rating: 5,
+      text: 'Priya di fought for me when I had no hope. She understood every detail of my case and explained everything clearly. Because of her, I have my children back. She never made me feel like a burden, even as a pro bono client.',
+    },
+    {
+      id: 't2',
+      authorInitial: 'R',
+      authorName: 'Ramesh Chauhan',
+      caseLabel: 'Civil Rights · District Court',
+      rating: 5,
+      text: 'Extremely professional and thorough. She responded to my calls and messages at all hours leading up to the hearing. Her knowledge of civil rights law is exceptional and she argued the case brilliantly before the judge.',
+    },
+    {
+      id: 't3',
+      authorInitial: 'A',
+      authorName: 'Anita Sharma',
+      caseLabel: 'Domestic Violence · Family Court',
+      rating: 4,
+      text: 'Very knowledgeable and compassionate. She handled a very sensitive matter with the utmost care and professionalism. The only small thing was that response time could be slightly faster during non-urgent matters.',
+    },
+  ],
+  caseDistribution: [
+    { label: 'Family Law', pct: 38, color: '#D4853A' },
+    { label: 'Civil Rights', pct: 28, color: '#E8A44A' },
+    { label: 'Criminal Law', pct: 19, color: '#C8622A' },
+    { label: 'Domestic Violence', pct: 10, color: 'rgba(212,133,58,0.5)' },
+    { label: 'Other', pct: 5, color: 'rgba(255,255,255,0.15)' },
+  ],
+  totalCases: 92,
+  blogPosts: [
+    {
+      id: 'b1',
+      tag: 'Family Law',
+      title: 'Understanding Section 125 CrPC: Maintenance Rights for Women and Children',
+      date: 'May 12, 2026',
+      readTime: '8 min read',
+      views: '2.1k views',
+    },
+    {
+      id: 'b2',
+      tag: 'Civil Rights',
+      title: 'Your Right to Silence: What Police Can and Cannot Do During Questioning',
+      date: 'Apr 28, 2026',
+      readTime: '6 min read',
+      views: '3.4k views',
+    },
+    {
+      id: 'b3',
+      tag: 'Pro Bono',
+      title: 'The Changing Landscape of Pro Bono in India: Why Lawyers Must Lead',
+      date: 'Apr 10, 2026',
+      readTime: '5 min read',
+      views: '1.8k views',
+    },
+  ],
+  sidebarOverview: [
+    { value: 'New Delhi, India', sub: 'Practice Location' },
+    { value: 'Enrolled 2016', sub: '8 years of practice' },
+    { value: 'Family & Civil Rights', sub: 'Primary specialisation' },
+    { value: '240+ Pro Bono Hours', sub: 'Community service' },
+    { value: 'English & Hindi', sub: 'Languages spoken' },
+  ],
+  consultationFees: [
+    { label: 'Initial Consultation', amount: '₹1,500' },
+    { label: 'Pro Bono (qualifying)', amount: 'Free', highlight: 'success' },
+  ],
+  similarLawyers: [
+    { id: 'sl1', initials: 'LI', name: 'Adv. Lakshmi Iyer', area: 'Labour Rights · Chennai' },
+    { id: 'sl2', initials: 'MP', name: 'Adv. Meera Pillai', area: 'Family Law · Kochi' },
+    { id: 'sl3', initials: 'AG', name: 'Adv. Arjun Gupta', area: 'Civil Rights · Lucknow' },
+  ],
+  calendarBaseDate: '2026-05-25',
+  weeklySlots: {
+    0: ['10:00', '11:00'],
+    1: [],
+    2: ['9:00', '14:00', '16:00'],
+    3: ['11:00'],
+    4: ['10:00', '15:00'],
+    5: [],
+    6: [],
+  },
+  bookedSlots: ['Mon 11:00', 'Wed 9:00', 'Fri 15:00'],
+}
+
+export const CALENDAR_DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const
+
+export const CALENDAR_MONTHS = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+] as const
