@@ -2,25 +2,36 @@ import os, sys
 # Add the project root to PYTHONPATH so sibling packages can be imported
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+print("RAG_EXECUTE IMPORTED")
+from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi.responses import JSONResponse
+import shutil
 from embedding.embedding_manager import EmbeddingManager
 from ingestion.ingestion import DocumentIngestion
 from vector_store.vector_store import PineconeVectorStore
 from dotenv import load_dotenv
 load_dotenv()
 
+print("UPLOAD_IMPORTED")
+router = APIRouter()
+
 class RAGPipeline:
     def __init__(
         self,
-        pdf_directory: str
+        pdf_directory: str = None,
+        pdf_path: str = None
     ):
         self.pdf_directory = pdf_directory
-        self.ingestor = DocumentIngestion(pdf_directory)
+        self.pdf_path = pdf_path
+        # Determine base directory for DocumentIngestion
+        base_dir = pdf_directory if pdf_directory else (os.path.dirname(pdf_path) if pdf_path else None)
+        self.ingestor = DocumentIngestion(base_dir) if base_dir else None
         self.embedding_manager = EmbeddingManager()
         self.vector_store = (
             PineconeVectorStore(
-                dimension = self.embedding_manager.embedding_dimension(),
-                index_name = "jurify-rag",
-                api_key = os.getenv("PINECONE_DB_KEY")
+                dimension=self.embedding_manager.embedding_dimension(),
+                index_name="jurify-rag",
+                api_key=os.getenv("PINECONE_DB_KEY")
             )
         )
 
@@ -32,13 +43,20 @@ class RAGPipeline:
             # STEP 1 : LOAD PDFs
 
             print("\n[1/3] Loading & Chunking PDFs")
-            print("-" * 40)
-            documents = (
-                self.ingestor.load_pdfs()
-            )
+            # After the file is saved, run the ingestion pipeline to index it
 
+            
+            print("-" * 40)
+            # Load documents: either a single PDF or all PDFs in directory
+            # Load documents: either a single PDF or all PDFs in directory
+            if self.pdf_path:
+                documents = self.ingestor.load_pdf(self.pdf_path)
+            else:
+                documents = self.ingestor.load_pdfs()
+
+            # Split documents (same for single or multiple)
             chunks = (
-                self.ingestor.split_documents(documents)
+                self.ingestor.split_documents(documents) if self.ingestor else self.split_documents(documents)
             )
 
             print(f"Generated {len(chunks)} chunks")
@@ -87,8 +105,3 @@ class RAGPipeline:
             return count
             
 
-pipeline = RAGPipeline(
-    pdf_directory = "../kaggle_dataset/"
-)  
-
-pipeline.run()

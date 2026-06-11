@@ -3,7 +3,7 @@
 
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, ChangeEvent } from 'react'
 import { AI_ACCEPTED_FILE_TYPES, AI_INPUT_QUICK_ACTIONS, AI_QUICK_ACTION_PROMPTS } from '@/lib/data/ai'
 import { useAiStore } from '@/stores/aiStore'
 import { useUiStore } from '@/stores/uiStore'
@@ -13,11 +13,40 @@ export function AiInputBar() {
   const hasDocument = useAiStore((s) => s.hasDocument)
   const isTyping = useAiStore((s) => s.isTyping)
   const sendMessage = useAiStore((s) => s.sendMessage)
-  const processFile = useAiStore((s) => s.processFile)
+
   const showToast = useUiStore((s) => s.showToast)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [value, setValue] = useState('')
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  // Handles file upload and updates status based on backend response
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const form = new FormData();
+    form.append('file', file);
+    try {
+      const resp = await fetch('http://localhost:8000/upload', {
+        method: 'POST',
+        body: form,
+      });
+      if (resp.ok) {
+        showToast(`"${file.name}" uploaded & indexed`, 'ok');
+        setUploadStatus('success');
+      } else {
+        showToast(`Upload failed: ${resp.statusText}`, 'error');
+        setUploadStatus('error');
+      }
+    } catch (err) {
+      showToast(`Upload error: ${err}`, 'error');
+      setUploadStatus('error');
+    }
+    // Reset input for next upload
+    e.target.value = '';
+    // Reset status after brief display
+    setTimeout(() => setUploadStatus('idle'), 3000);
+  };
 
   const placeholder = hasDocument
     ? 'Ask anything about your document…'
@@ -100,15 +129,14 @@ export function AiInputBar() {
             type="file"
             accept={AI_ACCEPTED_FILE_TYPES}
             className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0]
-              if (file) {
-                processFile(file)
-                showToast(`"${file.name}" loaded & indexed`, 'ok')
-              }
-              e.target.value = ''
-            }}
+            onChange={handleFileChange}
           />
+          {uploadStatus === 'success' && (
+            <span className="ml-2 text-[var(--td)]">✅ Uploaded</span>
+          )}
+          {uploadStatus === 'error' && (
+            <span className="ml-2 text-[var(--td)]">❌ Failed</span>
+          )}
         </div>
         <button
           type="button"

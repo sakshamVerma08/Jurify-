@@ -11,6 +11,16 @@ class DocumentIngestion:
     def __init__(self,pdf_directory)-> None: 
         self.pdf_directory = pdf_directory
 
+    def load_pdf(self, pdf_path: str) -> list:
+        """Load a single PDF file and return a list of documents."""
+        loader = PyPDFLoader(pdf_path)
+        documents = loader.load()
+        # Attach minimal metadata
+        for doc in documents:
+            doc.metadata["source_file"] = os.path.basename(pdf_path)
+            doc.metadata["file_type"] = "pdf"
+        return documents
+
     def load_pdfs(self)-> list:
         """Loading all PDF's"""
         all_documents = []
