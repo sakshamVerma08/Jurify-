@@ -52,10 +52,24 @@ export async function submitKycApplication(data: any) {
     // 4. Secure Transaction
     // We update the LawyerProfile, create KycApplication, Documents, and initial StatusEvent
     await db.$transaction(async (tx) => {
+      // Parse years of experience from string
+      let experienceInt = 0
+      if (step1.experience === '1–3 years') experienceInt = 1
+      else if (step1.experience === '3–5 years') experienceInt = 3
+      else if (step1.experience === '5–10 years') experienceInt = 5
+      else if (step1.experience === '10–20 years') experienceInt = 10
+      else if (step1.experience === '20+ years') experienceInt = 20
+
       // 4a. Update LawyerProfile with Step 1 and Step 3 details
       await tx.lawyerProfile.update({
         where: { id: lawyerProfile.id },
         data: {
+          enrollmentNo: step1.enrollmentNumber,
+          barCouncilState: step1.barCouncilState,
+          enrollmentYear: step1.enrollmentYear ? parseInt(step1.enrollmentYear) : null,
+          degree: step1.degree,
+          university: step1.university,
+          yearsOfExperience: experienceInt,
           practiceAreas: step1.practiceAreas || [],
           languages: step3.languages || [],
           city: step3.city,

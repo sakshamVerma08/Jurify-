@@ -323,6 +323,7 @@ model ClientProfile {
   firstName String
   lastName  String
   phone     String?
+  dob       DateTime?
   city      String?
   state     String?
   country   String   @default("India")
@@ -341,6 +342,8 @@ model LawyerProfile {
   firstName          String
   lastName           String
   displayName        String
+  phone              String?
+  dob                DateTime?
 
   // professional credentials
   enrollmentNo       String?            @unique

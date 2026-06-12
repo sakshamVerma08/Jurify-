@@ -83,6 +83,7 @@ export async function signupAction(raw: unknown) {
                         firstName,
                         lastName,
                         displayName: `${firstName} ${lastName}`,
+                        phone,
                         barCouncilState,
                     },
                 })

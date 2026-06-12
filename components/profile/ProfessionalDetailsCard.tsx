@@ -1,6 +1,7 @@
 import React from 'react'
 import { ProfileData } from '@/types'
 import { PRACTICE_AREAS, LANGUAGES } from '@/lib/data/profile'
+import { KYC_BAR_COUNCIL_STATES, KYC_DEGREES, KYC_ENROLLMENT_YEARS, KYC_EXPERIENCE_RANGES } from '@/lib/data/kyc'
 import { cn } from '@/lib/utils'
 
 interface ProfessionalDetailsCardProps {
@@ -92,9 +93,10 @@ export function ProfessionalDetailsCard({
               onChange={(e) => handleInputChange('barState', e.target.value)}
               className="w-full bg-white/[0.04] border border-white/[0.09] rounded-xl px-3.5 py-[11.5px] text-[13.5px] text-[#F5F0EA] outline-none cursor-pointer focus:border-[#d4853a]/45 focus:bg-white/[0.06]"
             >
-              <option value="Delhi">Delhi</option>
-              <option value="Maharashtra">Maharashtra</option>
-              <option value="Karnataka">Karnataka</option>
+              <option value="" disabled>Select state</option>
+              {KYC_BAR_COUNCIL_STATES.map((s) => (
+                <option key={s.id} value={s.name}>{s.name}</option>
+              ))}
             </select>
           ) : (
             <div className="w-full py-2.5 text-[13.5px] text-[#F5F0EA] font-medium border-b border-white/[0.04] min-h-[38px] flex items-center">
@@ -110,9 +112,10 @@ export function ProfessionalDetailsCard({
               onChange={(e) => handleInputChange('enrollmentYear', e.target.value)}
               className="w-full bg-white/[0.04] border border-white/[0.09] rounded-xl px-3.5 py-[11.5px] text-[13.5px] text-[#F5F0EA] outline-none cursor-pointer focus:border-[#d4853a]/45 focus:bg-white/[0.06]"
             >
-              <option value="2016">2016</option>
-              <option value="2017">2017</option>
-              <option value="2015">2015</option>
+              <option value="" disabled>Select year</option>
+              {KYC_ENROLLMENT_YEARS.map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
             </select>
           ) : (
             <div className="w-full py-2.5 text-[13.5px] text-[#F5F0EA] font-medium border-b border-white/[0.04] min-h-[38px] flex items-center">
@@ -131,8 +134,10 @@ export function ProfessionalDetailsCard({
               onChange={(e) => handleInputChange('degree', e.target.value)}
               className="w-full bg-white/[0.04] border border-white/[0.09] rounded-xl px-3.5 py-[11.5px] text-[13.5px] text-[#F5F0EA] outline-none cursor-pointer focus:border-[#d4853a]/45 focus:bg-white/[0.06]"
             >
-              <option value="LLB (Hons.)">LLB (Hons.)</option>
-              <option value="LLM">LLM</option>
+              <option value="" disabled>Select degree</option>
+              {KYC_DEGREES.map((d) => (
+                <option key={d} value={d}>{d}</option>
+              ))}
             </select>
           ) : (
             <div className="w-full py-2.5 text-[13.5px] text-[#F5F0EA] font-medium border-b border-white/[0.04] min-h-[38px] flex items-center">
@@ -166,9 +171,10 @@ export function ProfessionalDetailsCard({
               onChange={(e) => handleInputChange('experienceYears', e.target.value)}
               className="w-full bg-white/[0.04] border border-white/[0.09] rounded-xl px-3.5 py-[11.5px] text-[13.5px] text-[#F5F0EA] outline-none cursor-pointer focus:border-[#d4853a]/45 focus:bg-white/[0.06]"
             >
-              <option value="5–10 years">5–10 years</option>
-              <option value="8 years">8 years</option>
-              <option value="10+ years">10+ years</option>
+              <option value="" disabled>Select range</option>
+              {KYC_EXPERIENCE_RANGES.map((e) => (
+                <option key={e} value={e}>{e}</option>
+              ))}
             </select>
           ) : (
             <div className="w-full py-2.5 text-[13.5px] text-[#F5F0EA] font-medium border-b border-white/[0.04] min-h-[38px] flex items-center">

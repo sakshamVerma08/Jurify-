@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils'
 import { ProfileData } from '@/types'
 import { initialProfileState } from '@/lib/data/profile'
 import { JurifyLogoIcon } from '@/components/icons/JurifyLogoIcon'
+import { updateProfileAction } from '@/actions/profile/update'
 
 // Import modular subcomponents
 import { PhotoCard } from './PhotoCard'
@@ -25,12 +26,10 @@ import { SecurityTab } from './SecurityTab'
 import { NotificationsTab } from './NotificationsTab'
 import { UnsavedBanner } from './UnsavedBanner'
 
-export function ProfilePageContent() {
+export function ProfilePageContent({ initialData, userRole }: { initialData: ProfileData, userRole: 'LAWYER' | 'CLIENT' }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const showToast = useUiStore((s) => s.showToast)
-  const viewRole = useDashboardStore((s) => s.viewRole)
-  const setViewRole = useDashboardStore((s) => s.setViewRole)
 
   // Tab State
   const [activeTab, setActiveTab] = useState<'profile' | 'settings' | 'security' | 'notifications'>('profile')
@@ -40,8 +39,8 @@ export function ProfilePageContent() {
   const [isEditingProfessional, setIsEditingProfessional] = useState(false)
 
   // Profile data state
-  const [currState, setCurrState] = useState<ProfileData>(initialProfileState)
-  const [cleanState, setCleanState] = useState<ProfileData>(initialProfileState)
+  const [currState, setCurrState] = useState<ProfileData>(initialData)
+  const [cleanState, setCleanState] = useState<ProfileData>(initialData)
   const [isSaving, startSavingTransition] = useTransition()
 
   // Parse tab search query parameter on load
@@ -55,15 +54,19 @@ export function ProfilePageContent() {
   // Check if current state is dirty
   const isDirty = JSON.stringify(currState) !== JSON.stringify(cleanState)
 
-  // Save profile changes (simulated async delay)
+  // Save profile changes
   const handleSaveProfile = () => {
     startSavingTransition(async () => {
-      // Simulate API call lag
-      await new Promise((resolve) => setTimeout(resolve, 800))
+      const result = await updateProfileAction(currState, userRole)
+      if (!result.success) {
+        showToast(result.error || 'Failed to save changes', 'err')
+        return
+      }
       setCleanState(currState)
       setIsEditingBasicInfo(false)
       setIsEditingProfessional(false)
       showToast('Changes saved successfully', 'ok')
+      router.refresh()
     })
   }
 
@@ -81,7 +84,7 @@ export function ProfilePageContent() {
   }
 
   // Dynamic values based on active viewing role
-  const isLawyer = viewRole === 'lawyer'
+  const isLawyer = userRole === 'LAWYER'
   const firstName = isLawyer ? currState.lawyerFirstName : currState.clientFirstName
   const lastName = isLawyer ? currState.lawyerLastName : currState.clientLastName
   const photoUrl = isLawyer ? currState.lawyerPhotoUrl : currState.clientPhotoUrl
@@ -136,26 +139,6 @@ export function ProfilePageContent() {
             <h1 className="font-serif text-[32px] md:text-[46px] font-light leading-[1.08] tracking-[-0.8px]">
               My <em className="italic text-[#e8a44a] not-italic">Profile</em>
             </h1>
-          </div>
-          <div className="flex gap-1 bg-white/[0.04] border border-white/[0.08] rounded-[9px] p-1">
-            <button
-              onClick={() => setViewRole('lawyer')}
-              className={cn(
-                "font-sans text-[12px] font-medium bg-transparent border-none py-1.5 px-4 rounded-md cursor-pointer text-white/40 transition-all",
-                isLawyer && "bg-[#d4853a]/18 text-[#e8a44a] border border-[#d4853a]/28 font-semibold"
-              )}
-            >
-              ⚖ Lawyer View
-            </button>
-            <button
-              onClick={() => setViewRole('client')}
-              className={cn(
-                "font-sans text-[12px] font-medium bg-transparent border-none py-1.5 px-4 rounded-md cursor-pointer text-white/40 transition-all",
-                !isLawyer && "bg-[#d4853a]/18 text-[#e8a44a] border border-[#d4853a]/28 font-semibold"
-              )}
-            >
-              👤 Client View
-            </button>
           </div>
         </div>
 
