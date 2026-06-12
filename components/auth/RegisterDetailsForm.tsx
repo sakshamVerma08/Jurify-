@@ -21,7 +21,7 @@ import { useUiStore } from '@/stores/uiStore'
 interface Props {
   role: UserRole
   onBack: () => void
-  onSuccess: () => void
+  onSuccess: (email: string) => void
   animationClass?: string
 }
 
@@ -65,12 +65,12 @@ export function RegisterDetailsForm({ role, onBack, onSuccess, animationClass }:
   const passwordValue = watch('password')
   const strength = getPasswordStrength(passwordValue ?? '')
 
-  async function onSubmit() {
+  async function onSubmit(data: RegisterFormData) {
     setIsSubmitting(true)
     await new Promise((resolve) => setTimeout(resolve, 1600))
     setIsSubmitting(false)
-    showToast('Account created!', 'ok')
-    onSuccess()
+    showToast('OTP sent to your email!', 'info')
+    onSuccess(data.email)
   }
 
   function onInvalid() {
@@ -83,7 +83,7 @@ export function RegisterDetailsForm({ role, onBack, onSuccess, animationClass }:
     <div className={animationClass}>
       <div className="mb-7">
         <div className="mb-2.5 text-[10px] font-medium uppercase tracking-[1.5px] text-og">
-          Step 2 of 2 · Account Details
+          Step 2 of 3 · Account Details
         </div>
         <h1 className="mb-1.5 font-serif text-[34px] font-light leading-[1.08] tracking-[-0.6px] text-[var(--t)]">
           Create your <em className="italic text-o2">account</em>

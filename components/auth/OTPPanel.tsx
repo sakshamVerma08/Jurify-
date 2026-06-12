@@ -13,9 +13,10 @@ import { useUiStore } from '@/stores/uiStore'
 interface Props {
   email: string
   onBack: () => void
+  onSuccess?: () => void
 }
 
-export function OTPPanel({ email, onBack }: Props) {
+export function OTPPanel({ email, onBack, onSuccess }: Props) {
   const router = useRouter()
   const setUser = useAuthStore((s) => s.setUser)
   const showToast = useUiStore((s) => s.showToast)
@@ -93,13 +94,19 @@ export function OTPPanel({ email, onBack }: Props) {
 
     if (code === DEMO_OTP_CODE) {
       setVerified(true)
-      showToast('Welcome to Jurify!', 'ok')
-      setUser({
-        id: 'user-demo',
-        name: email.split('@')[0] ?? 'Advocate',
-        role: 'lawyer',
-      })
-      setTimeout(() => router.push('/dashboard'), 1500)
+      
+      if (onSuccess) {
+        showToast('Email verified successfully!', 'ok')
+        setTimeout(() => onSuccess(), 800)
+      } else {
+        showToast('Welcome to Jurify!', 'ok')
+        setUser({
+          id: 'user-demo',
+          name: email.split('@')[0] ?? 'Advocate',
+          role: 'lawyer',
+        })
+        setTimeout(() => router.push('/dashboard'), 1500)
+      }
     } else {
       setError(true)
       setIsVerifying(false)

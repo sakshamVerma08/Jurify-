@@ -35,11 +35,11 @@ export function AiInputBar() {
         showToast(`"${file.name}" uploaded & indexed`, 'ok');
         setUploadStatus('success');
       } else {
-        showToast(`Upload failed: ${resp.statusText}`, 'error');
+        showToast(`Upload failed: ${resp.statusText}`, 'err');
         setUploadStatus('error');
       }
     } catch (err) {
-      showToast(`Upload error: ${err}`, 'error');
+      showToast(`Upload error: ${err}`, 'err');
       setUploadStatus('error');
     }
     // Reset input for next upload

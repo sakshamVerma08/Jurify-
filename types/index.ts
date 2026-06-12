@@ -103,7 +103,7 @@ export type ToastType = 'ok' | 'err' | 'info'
 
 export type UserRole = 'lawyer' | 'client'
 
-export type RegisterStep = 1 | 2 | 3
+export type RegisterStep = 1 | 2 | 3 | 4
 
 export interface RoleOption {
   id: UserRole
