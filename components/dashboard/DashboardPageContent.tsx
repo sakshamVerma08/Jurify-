@@ -12,9 +12,15 @@ import { LawyerActiveCasesView } from '@/components/dashboard/LawyerActiveCasesV
 import { Toast } from '@/components/ui/Toast'
 import { useDashboardStore } from '@/stores/dashboardStore'
 
-export function DashboardPageContent() {
+import { useEffect } from 'react'
+
+export function DashboardPageContent({ initialRole }: { initialRole: 'lawyer' | 'client' }) {
   const viewRole = useDashboardStore((s) => s.viewRole)
   const dashboardView = useDashboardStore((s) => s.dashboardView)
+
+  useEffect(() => {
+    useDashboardStore.setState({ viewRole: initialRole })
+  }, [initialRole])
 
   return (
     <div className="flex h-screen overflow-hidden bg-bg">

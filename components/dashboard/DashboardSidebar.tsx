@@ -19,7 +19,6 @@ import type { DashboardNavIcon, DashboardNavItem } from '@/types'
 export function DashboardSidebar() {
   const pathname = usePathname()
   const viewRole = useDashboardStore((s) => s.viewRole)
-  const setViewRole = useDashboardStore((s) => s.setViewRole)
   const dashboardView = useDashboardStore((s) => s.dashboardView)
   const setDashboardView = useDashboardStore((s) => s.setDashboardView)
   const profile = DASHBOARD_PROFILES[viewRole]
@@ -33,30 +32,7 @@ export function DashboardSidebar() {
         <span className="font-serif text-xl font-semibold tracking-wide text-[var(--t)]">Jurify</span>
       </Link>
 
-      <div className="border-b border-white/[0.05] px-3.5 py-3">
-        <div className="flex gap-1 rounded-[9px] border border-white/[0.08] bg-white/[0.04] p-[3px]">
-          <button
-            type="button"
-            onClick={() => setViewRole('lawyer')}
-            className={cn(
-              'flex-1 cursor-pointer rounded-md border border-transparent bg-transparent py-1.5 text-center font-sans text-[11.5px] font-medium text-[var(--td)] transition-all duration-200',
-              viewRole === 'lawyer' && 'border-og/30 bg-og/[0.18] text-o2'
-            )}
-          >
-            Lawyer
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewRole('client')}
-            className={cn(
-              'flex-1 cursor-pointer rounded-md border border-transparent bg-transparent py-1.5 text-center font-sans text-[11.5px] font-medium text-[var(--td)] transition-all duration-200',
-              viewRole === 'client' && 'border-og/30 bg-og/[0.18] text-o2'
-            )}
-          >
-            Client
-          </button>
-        </div>
-      </div>
+
 
       <NavSection label="Main" items={DASHBOARD_NAV_MAIN} pathname={pathname} viewRole={viewRole} dashboardView={dashboardView} setDashboardView={setDashboardView} />
       <NavSection label="Work" items={DASHBOARD_NAV_WORK} pathname={pathname} viewRole={viewRole} dashboardView={dashboardView} setDashboardView={setDashboardView} />

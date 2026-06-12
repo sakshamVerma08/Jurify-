@@ -84,12 +84,14 @@ export function PhotoCard({
       <div className="text-[12px] text-white/20 mb-4">
         {isLawyer ? `${currState.primaryCourt || 'Delhi HC'} · ${currState.experienceYears || '8 years'}` : 'Client Member'}
       </div>
-      <div className="inline-flex items-center gap-[5px] bg-[#4ade80]/8 border border-[#4ade80]/22 rounded-[20px] px-3 py-1 text-[11px] text-[#4ade80] mb-4">
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-          <path d="M2 5l2.2 2.2L8 3" stroke="#4ade80" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-        Verified
-      </div>
+      {isLawyer && currState.isVerified && (
+        <div className="inline-flex items-center gap-[5px] bg-[#4ade80]/8 border border-[#4ade80]/22 rounded-[20px] px-3 py-1 text-[11px] text-[#4ade80] mb-4">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M2 5l2.2 2.2L8 3" stroke="#4ade80" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Verified
+        </div>
+      )}
       
       <div className="flex flex-col gap-2">
         <button

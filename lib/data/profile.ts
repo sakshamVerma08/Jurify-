@@ -27,6 +27,7 @@ export const initialProfileState: ProfileData = {
   practiceAreas: ['Family Law', 'Civil Rights', 'Criminal Law', 'Domestic Violence'],
   languages: ['English', 'Hindi'],
   bio: 'Senior advocate at Delhi High Court with 8 years of experience specialising in family law and civil rights. Committed to accessible justice through pro bono work.',
+  isVerified: false,
 
   videoName: 'intro_priya_mehta.mp4',
   videoDate: '12 May 2026',

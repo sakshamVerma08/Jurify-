@@ -12,6 +12,7 @@ export const LAWYER_PROFILE: LawyerProfile = {
   experienceYears: 8,
   connections: 145,
   proBonoAvailable: true,
+  verified: false,
   bio: [
     'Advocate Priya Mehta is a Senior Advocate at the Delhi High Court with 8 years of focused practice in family law, civil rights, and criminal defence. She completed her LLB (Hons.) from the Faculty of Law, University of Delhi in 2015 and was enrolled with the Bar Council of Delhi in 2016.',
     'Priya is deeply committed to accessible justice. Over the past 4 years, she has dedicated over 240 hours to pro bono representation for women and children in domestic violence cases, custody disputes, and civil rights violations. She believes the law must work equally for everyone — regardless of their ability to pay.',

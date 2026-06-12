@@ -67,6 +67,7 @@ export default async function ProfilePage() {
     practiceAreas: user.lawyerProfile?.practiceAreas || [],
     languages: user.lawyerProfile?.languages || [],
     bio: user.lawyerProfile?.bio || '',
+    isVerified: user.lawyerProfile?.isVerified || false,
     videoName: user.lawyerProfile?.videoKey || null,
 
     // Client fields

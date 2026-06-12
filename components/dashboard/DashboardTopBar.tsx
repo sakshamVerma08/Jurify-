@@ -4,6 +4,9 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useState, useRef, useEffect } from 'react'
+import { signOut } from '@/lib/auth/auth-client'
 import { DASHBOARD_DATE_LABEL, DASHBOARD_PROFILES } from '@/lib/data/dashboard'
 import { useDashboardStore } from '@/stores/dashboardStore'
 import { useUiStore } from '@/stores/uiStore'
@@ -14,9 +17,28 @@ export function DashboardTopBar() {
   const setSearch = useDashboardStore((s) => s.setSearch)
   const showToast = useUiStore((s) => s.showToast)
   const profile = DASHBOARD_PROFILES[viewRole]
+  const router = useRouter()
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const handleLogout = async () => {
+    await signOut()
+    router.push('/login')
+  }
 
   return (
-    <header className="flex h-[62px] shrink-0 items-center justify-between border-b border-white/[0.07] bg-[rgba(8,8,8,0.92)] px-8 backdrop-blur-[20px] max-md:px-4">
+    <header className="relative z-50 flex h-[62px] shrink-0 items-center justify-between border-b border-white/[0.07] bg-[rgba(8,8,8,0.92)] px-8 backdrop-blur-[20px] max-md:px-4">
       <div>
         <h1 className="text-base font-semibold text-[var(--t)]">{profile.greeting}</h1>
         <p className="mt-px text-xs text-[var(--td)]">{DASHBOARD_DATE_LABEL}</p>
@@ -66,12 +88,37 @@ export function DashboardTopBar() {
             <path d="M7.5 1.5L1.5 7V13.5H5.5V9.5H9.5V13.5H13.5V7L7.5 1.5Z" stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" />
           </svg>
         </Link>
-        <Link
-          href="/profile"
-          className="flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-full border-[1.5px] border-og/30 bg-og/[0.18] font-serif text-sm font-semibold text-og"
-        >
-          {profile.initials}
-        </Link>
+        <div className="relative" ref={dropdownRef}>
+          <button
+            type="button"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-full border-[1.5px] border-og/30 bg-og/[0.18] font-serif text-sm font-semibold text-og transition-colors hover:border-og/50 hover:bg-og/[0.25]"
+          >
+            {profile.initials}
+          </button>
+
+          {isDropdownOpen && (
+            <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-white/[0.08] bg-[#0f0f0f] p-1.5 shadow-xl ring-1 ring-black/5 z-[9999]">
+              <Link
+                href="/profile"
+                onClick={() => setIsDropdownOpen(false)}
+                className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-[var(--t)] transition-colors hover:bg-white/[0.05]"
+              >
+                Profile
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsDropdownOpen(false)
+                  handleLogout()
+                }}
+                className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-danger transition-colors hover:bg-danger/10"
+              >
+                Log out
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   )

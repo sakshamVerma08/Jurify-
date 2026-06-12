@@ -469,6 +469,7 @@ export interface LawyerProfile {
   experienceYears: number
   connections: number
   proBonoAvailable: boolean
+  verified: boolean
   bio: string[]
   videoLabel: string
   credentials: LawyerCredential[]
@@ -637,6 +638,7 @@ export interface ProfileData {
   practiceAreas: string[]
   languages: string[]
   bio: string
+  isVerified: boolean
 
   videoName: string | null
   videoDate: string | null
