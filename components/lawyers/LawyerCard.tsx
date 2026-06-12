@@ -121,12 +121,20 @@ export function LawyerCard({ lawyer, index, viewRole, viewMode }: LawyerCardProp
 
       <div className={cn('flex gap-2', isList && 'justify-end')}>
         {viewRole === 'client' ? (
-          <Link
-            href={`/lawyers/${lawyer.id}`}
-            className="btn-gradient-nav flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-[9px] border-none py-2.5 font-sans text-[12.5px] font-medium text-white transition-all duration-200 hover:-translate-y-px hover:opacity-90"
-          >
-            View Profile
-          </Link>
+          <>
+            <Link
+              href={`/lawyers/${lawyer.id}`}
+              className="btn-gradient-nav flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-[9px] border-none py-2.5 font-sans text-[12.5px] font-medium text-white transition-all duration-200 hover:-translate-y-px hover:opacity-90"
+            >
+              View Profile
+            </Link>
+            <Link
+              href="/messages"
+              className="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-[9px] border border-white/[0.12] bg-white/[0.05] py-2.5 font-sans text-[12.5px] font-medium text-[var(--t)] transition-all duration-200 hover:border-white/[0.22] hover:bg-white/[0.09]"
+            >
+              Message
+            </Link>
+          </>
         ) : (
           <ConnectButton status={lawyer.connectStatus} onConnect={handleConnect} />
         )}
