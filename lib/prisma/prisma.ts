@@ -1,6 +1,6 @@
 //Singleton pattern for Prisma Client to prevent multiple instances in development mode, which can lead to connection issues. 
 //This is especially important when using serverless environments or hot-reloading during development and prevents the "Error: P1001: Can't reach database server at `localhost`:`5432`" error that occurs when too many connections are opened.
-import { PrismaClient } from "@/generated/prisma";
+import { PrismaClient } from "@prisma/client";
 //Imports the PostgreSQL driver adapter. Prisma needs this to talk to Postgres using the newer driver adapters pattern instead of the older binary query engine.
 import { PrismaPg } from "@prisma/adapter-pg";
 
@@ -21,9 +21,9 @@ function createPrismaClient() {
     // This Prisma Adapter is used with the new Prisma Client in Prisma- v7.
     // Also we are using supabase with pooler connection, so Prisma Adapters are needed anyway.
     //This is what prisma uses under the hood to actually open connections to our supabase database.
-    const adapter = new PrismaPg({
-        connectionString,
-    });
+    const { Pool } = require("pg");
+    const pool = new Pool({ connectionString });
+    const adapter = new PrismaPg(pool);
 
     //Log level is ["error","warn"] in dev so we can see warnings in dev but only ["error"] in production to keep logs clean.
     return new PrismaClient({

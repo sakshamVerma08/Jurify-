@@ -10,13 +10,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { FieldError } from '@/components/auth/FieldError'
 import { BAR_COUNCIL_STATES, PHONE_COUNTRY_CODES } from '@/lib/data/register'
 import {
-  createRegisterSchema,
+  registerSchema,
   getPasswordStrength,
   type RegisterFormData,
 } from '@/lib/validations/auth'
 import type { UserRole } from '@/types'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/stores/uiStore'
+import { signupAction } from '@/actions/auth/signup'
 
 interface Props {
   role: UserRole
@@ -38,7 +39,7 @@ export function RegisterDetailsForm({ role, onBack, onSuccess, animationClass }:
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const schema = useMemo(() => createRegisterSchema(role), [role])
+  const schema = useMemo(() => registerSchema(), [])
 
   const {
     register,
@@ -50,6 +51,7 @@ export function RegisterDetailsForm({ role, onBack, onSuccess, animationClass }:
     resolver: zodResolver(schema),
     mode: 'onBlur',
     defaultValues: {
+      role: role === 'lawyer' ? 'LAWYER' : 'CLIENT',
       firstName: '',
       lastName: '',
       email: '',
@@ -67,8 +69,17 @@ export function RegisterDetailsForm({ role, onBack, onSuccess, animationClass }:
 
   async function onSubmit(data: RegisterFormData) {
     setIsSubmitting(true)
-    await new Promise((resolve) => setTimeout(resolve, 1600))
+    
+    const result = await signupAction(data)
+    
     setIsSubmitting(false)
+
+    if (result.error) {
+      const errorMessage = (result.error as any).root?.[0] || 'Account creation failed'
+      showToast(errorMessage, 'err')
+      return
+    }
+
     showToast('OTP sent to your email!', 'info')
     onSuccess(data.email)
   }

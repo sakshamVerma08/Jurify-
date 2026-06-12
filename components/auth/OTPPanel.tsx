@@ -9,6 +9,7 @@ import { DEMO_OTP_CODE, RESEND_OTP_SECONDS } from '@/lib/data/auth'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/authStore'
 import { useUiStore } from '@/stores/uiStore'
+import { verifyOtpAction } from '@/actions/auth/verify-otp'
 
 interface Props {
   email: string
@@ -90,9 +91,12 @@ export function OTPPanel({ email, onBack, onSuccess }: Props) {
     if (code.length !== 6) return
 
     setIsVerifying(true)
-    await new Promise((resolve) => setTimeout(resolve, 1200))
+    
+    const result = await verifyOtpAction(email, code)
+    
+    setIsVerifying(false)
 
-    if (code === DEMO_OTP_CODE) {
+    if (result.success) {
       setVerified(true)
       
       if (onSuccess) {
@@ -109,7 +113,7 @@ export function OTPPanel({ email, onBack, onSuccess }: Props) {
       }
     } else {
       setError(true)
-      setIsVerifying(false)
+      showToast(result.error || 'Invalid or expired OTP', 'err')
       resetDigits()
     }
   }

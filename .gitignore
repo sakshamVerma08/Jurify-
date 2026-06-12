@@ -35,3 +35,6 @@ next-env.d.ts
 python-services/venv/
 python-services/.env
 python-services/__pycache__/
+
+#others
+API_ROUTES.md
