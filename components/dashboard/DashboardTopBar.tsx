@@ -58,6 +58,15 @@ export function DashboardTopBar() {
           </svg>
         </button>
         <Link
+          href="/"
+          title="Go to Landing Page"
+          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-[9px] border border-white/[0.09] bg-white/[0.04] text-[var(--td)] transition-all duration-200 hover:bg-white/[0.08] hover:text-[var(--tm)]"
+        >
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+            <path d="M7.5 1.5L1.5 7V13.5H5.5V9.5H9.5V13.5H13.5V7L7.5 1.5Z" stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" />
+          </svg>
+        </Link>
+        <Link
           href="/profile"
           className="flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-full border-[1.5px] border-og/30 bg-og/[0.18] font-serif text-sm font-semibold text-og"
         >

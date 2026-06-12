@@ -498,6 +498,7 @@ model Case {
   title                String
   description          String      @db.Text
   category             String
+  isProBono            Boolean     @default(true)
   stage                CaseStage   @default(INITIAL_CONSULTATION)
   urgency              CaseUrgency @default(MEDIUM)
   status               CaseStatus  @default(OPEN)

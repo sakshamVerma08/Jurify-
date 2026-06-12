@@ -14,7 +14,9 @@ import {
   POST_CASE_CATEGORIES,
   POST_CASE_STAGES,
 } from '@/lib/data/cases'
+import { z } from 'zod'
 import { postCaseSchema, type PostCaseFormData } from '@/lib/validations/case'
+import { postCaseAction } from '@/actions/cases/post'
 import { cn } from '@/lib/utils'
 import { useCasesStore } from '@/stores/casesStore'
 import { useUiStore } from '@/stores/uiStore'
@@ -56,11 +58,13 @@ export function PostCaseModal() {
       contactEmail: '',
       contactPhone: '',
       contactAddress: '',
+      isProBono: true,
       acceptTerms: false,
     },
   })
 
   const description = watch('description') ?? ''
+  const isProBono = watch('isProBono')
   const acceptTerms = watch('acceptTerms')
 
   function handleClose() {
@@ -70,25 +74,18 @@ export function PostCaseModal() {
 
   async function onSubmit(data: PostCaseFormData) {
     setIsSubmitting(true)
-    await new Promise((r) => setTimeout(r, 1400))
+    
+    // Call our securely validated server action
+    const result = await postCaseAction(data)
+    
     setIsSubmitting(false)
-    addPostedCase({
-      title: data.title,
-      description: data.description,
-      category: data.category,
-      stage: data.stage as any,
-      incidentDate: data.incidentDate,
-      deadline: data.deadline,
-      opposingName: data.opposingName,
-      opposingRelationship: data.opposingRelationship,
-      location: data.location,
-      contactName: data.contactName,
-      contactEmail: data.contactEmail,
-      contactPhone: data.contactPhone || undefined,
-      contactAddress: data.contactAddress || undefined,
-    })
-    showToast('Case posted successfully!', 'ok')
-    handleClose()
+    
+    if (result.success) {
+      showToast('Case posted successfully!', 'ok')
+      handleClose()
+    } else {
+      showToast(result.error || 'Failed to post case', 'err')
+    }
   }
 
   function onInvalid() {
@@ -204,6 +201,32 @@ export function PostCaseModal() {
             <InputField id="contact-address" label="Address (optional)" error={errors.contactAddress?.message} register={register('contactAddress')} />
           </div>
         </FormSection>
+
+        <label
+          className={cn(
+            'mb-5 flex cursor-pointer items-start gap-3 rounded-[10px] border border-white/[0.07] bg-white/[0.03] p-4 transition-colors',
+            isProBono && 'border-og/30'
+          )}
+          onClick={() => setValue('isProBono', !isProBono, { shouldValidate: true })}
+        >
+          <div
+            className={cn(
+              'flex h-5 w-[34px] shrink-0 items-center rounded-full p-0.5 transition-colors duration-200 ease-in-out',
+              isProBono ? 'bg-og' : 'bg-white/10'
+            )}
+          >
+            <div
+              className={cn(
+                'h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out',
+                isProBono ? 'translate-x-[14px]' : 'translate-x-0'
+              )}
+            />
+          </div>
+          <span className="text-[12.5px] leading-relaxed text-[var(--tm)]">
+            <strong className="block text-white mb-0.5 font-medium">This is a Pro Bono case</strong>
+            I am seeking free legal representation. Pro Bono cases are highlighted to attract lawyers willing to work without a fee.
+          </span>
+        </label>
 
         <label
           className={cn(

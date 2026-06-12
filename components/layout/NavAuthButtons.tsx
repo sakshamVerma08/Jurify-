@@ -103,15 +103,15 @@ export function NavAuthButtons({ className }: Props) {
             
             <div className="p-1.5">
               <Link
-                href="/dashboard"
+                href="/profile"
                 onClick={() => setMenuOpen(false)}
                 className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-[var(--tm)] transition-colors hover:bg-white/[0.05] hover:text-[var(--t)]"
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="opacity-70">
-                  <path d="M2 5L8 1.5L14 5V13.5C14 14.3284 13.3284 15 12.5 15H3.5C2.67157 15 2 14.3284 2 13.5V5Z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M5.5 15V10.5C5.5 9.67157 6.17157 9 7 9H9C9.82843 9 10.5 9.67157 10.5 10.5V15" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="8" cy="6" r="3" stroke="currentColor" strokeWidth="1.2" />
+                  <path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
                 </svg>
-                Dashboard
+                Profile
               </Link>
             </div>
 

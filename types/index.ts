@@ -150,6 +150,7 @@ export interface LegalCase {
   id: string
   title: string
   category: string
+  isProBono: boolean
   stage: CaseStage
   stageLabel: string
   urgency: CaseUrgency
@@ -189,6 +190,7 @@ export interface MyPostedCase {
   id: string
   title: string
   category: string
+  isProBono: boolean
   location: string
   postedAgo: string
   stage: CaseStage
@@ -225,6 +227,7 @@ export interface CaseFilters {
   stages: CaseStage[]
   search: string
   sort: CaseSortOption
+  proBonoOnly: boolean
 }
 
 export const CASE_CATEGORIES = [

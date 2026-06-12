@@ -4,12 +4,14 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FieldError } from '@/components/auth/FieldError'
 import { ProgressTracker } from '@/components/ui/ProgressTracker'
 import { Modal } from '@/components/ui/Modal'
 import { applyCaseSchema, type ApplyCaseFormData } from '@/lib/validations/case'
+import { applyCaseAction } from '@/actions/cases/lawyer'
 import { cn } from '@/lib/utils'
 import { useCasesStore } from '@/stores/casesStore'
 import { useUiStore } from '@/stores/uiStore'
@@ -38,6 +40,7 @@ export function CaseDetailModal() {
   const closeDetailModal = useCasesStore((s) => s.closeDetailModal)
   const showToast = useUiStore((s) => s.showToast)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const router = useRouter()
 
   const {
     register,
@@ -56,12 +59,25 @@ export function CaseDetailModal() {
     reset()
   }
 
-  async function onApply() {
+  async function onApply(data: ApplyCaseFormData) {
+    if (!legalCase) return
+
     setIsSubmitting(true)
-    await new Promise((r) => setTimeout(r, 1200))
+    const result = await applyCaseAction(legalCase.id, data)
     setIsSubmitting(false)
-    showToast('Application submitted successfully!', 'ok')
-    handleClose()
+
+    if (result.success) {
+      showToast('Application submitted successfully!', 'ok')
+      handleClose()
+    } else {
+      if (result.requireKyc) {
+        showToast(result.error || 'Verification required.', 'err')
+        handleClose()
+        router.push('/kyc')
+      } else {
+        showToast(result.error || 'Failed to submit application', 'err')
+      }
+    }
   }
 
   function onInvalid() {
