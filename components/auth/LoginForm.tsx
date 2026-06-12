@@ -12,7 +12,7 @@ import { JurifyLogoIcon } from '@/components/icons/JurifyLogoIcon'
 import { loginSchema, type LoginFormData } from '@/lib/validations/auth'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/stores/uiStore'
-import { signinAction } from '@/actions/auth/signin'
+import { authClient } from '@/lib/auth/auth-client'
 
 interface Props {
   onLoginSuccess: (email: string, isVerified: boolean) => void
@@ -46,23 +46,35 @@ export function LoginForm({ onLoginSuccess, onForgotPassword }: Props) {
 
   async function onSubmit(data: LoginFormData) {
     setIsSubmitting(true)
-    const result = await signinAction(data)
-    setIsSubmitting(false)
+    
+    // Use authClient to guarantee the auth_session cookie is correctly set by the browser
+    const { data: signInData, error } = await authClient.signIn.email({
+      email: data.email,
+      password: data.password,
+    })
 
-    if (result.error) {
-      if ('root' in result.error && result.error.root) {
-        showToast(result.error.root[0], 'err')
-      } else {
-        showToast('Please check your input fields.', 'err')
-      }
-    } else if (result.success) {
-      if (result.isVerified) {
-        showToast('Welcome back!', 'ok')
-      } else {
-        showToast('Please verify your email. Code sent.', 'info')
-      }
-      onLoginSuccess(data.email, result.isVerified ?? false)
+    if (error) {
+      setIsSubmitting(false)
+      showToast(error.message || 'Invalid email or password', 'err')
+      return
     }
+
+    if (signInData?.user) {
+      if (signInData.user.emailVerified) {
+        showToast('Welcome back!', 'ok')
+        onLoginSuccess(data.email, true)
+      } else {
+        // Verification Guardrail Intercept
+        await authClient.emailOtp.sendVerificationOtp({
+          email: data.email,
+          type: "email-verification"
+        })
+        showToast('Please verify your email. Code sent.', 'info')
+        onLoginSuccess(data.email, false)
+      }
+    }
+    
+    setIsSubmitting(false)
   }
 
   function handleGoogleLogin() {
