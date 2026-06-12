@@ -18,6 +18,7 @@ import type { UserRole } from '@/types'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/stores/uiStore'
 import { signupAction } from '@/actions/auth/signup'
+import { authClient } from '@/lib/auth/auth-client'
 
 interface Props {
   role: UserRole
@@ -72,11 +73,23 @@ export function RegisterDetailsForm({ role, onBack, onSuccess, animationClass }:
     
     const result = await signupAction(data)
     
-    setIsSubmitting(false)
-
     if (result.error) {
+      setIsSubmitting(false)
       const errorMessage = (result.error as any).root?.[0] || 'Account creation failed'
       showToast(errorMessage, 'err')
+      return
+    }
+
+    // Explicitly sign in from the client to ensure the session cookie is correctly set in the browser
+    const { error: signInError } = await authClient.signIn.email({
+      email: data.email,
+      password: data.password,
+    })
+
+    setIsSubmitting(false)
+
+    if (signInError) {
+      showToast('Account created but login failed. Please sign in.', 'err')
       return
     }
 

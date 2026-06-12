@@ -16,12 +16,14 @@ interface KycState {
   prevStep: () => void
   setStep1: (data: Partial<KycStep1FormData>) => void
   setStep3: (data: Partial<Omit<KycStep3FormData, 'photo'>>) => void
-  setDocument: (id: KycDocumentId, file: File) => void
+  setDocument: (id: KycDocumentId, fileInfo: KycUploadedFile) => void
   removeDocument: (id: KycDocumentId) => void
-  setPhoto: (file: File, previewUrl: string) => void
+  setPhoto: (fileInfo: KycUploadedFile, previewUrl: string) => void
   removePhoto: () => void
   setShowSuccess: (show: boolean) => void
   setIsSubmitting: (v: boolean) => void
+  referenceNumber: string | null
+  setReferenceNumber: (ref: string) => void
   getProgressPct: () => number
 }
 
@@ -38,6 +40,9 @@ export const useKycStore = create<KycState>((set, get) => ({
   photoPreviewUrl: null,
   showSuccess: false,
   isSubmitting: false,
+  referenceNumber: null,
+
+  setReferenceNumber: (ref) => set({ referenceNumber: ref }),
 
   setStep: (step) => set({ currentStep: step }),
 
@@ -55,11 +60,11 @@ export const useKycStore = create<KycState>((set, get) => ({
 
   setStep3: (data) => set((s) => ({ step3: { ...s.step3, ...data } })),
 
-  setDocument: (id, file) =>
+  setDocument: (id, fileInfo) =>
     set((s) => ({
       documents: {
         ...s.documents,
-        [id]: { file, name: file.name, sizeLabel: formatSize(file.size) },
+        [id]: fileInfo,
       },
     })),
 
@@ -70,9 +75,9 @@ export const useKycStore = create<KycState>((set, get) => ({
       return { documents: next }
     }),
 
-  setPhoto: (file, previewUrl) =>
+  setPhoto: (fileInfo, previewUrl) =>
     set({
-      photo: { file, name: file.name, sizeLabel: formatSize(file.size) },
+      photo: fileInfo,
       photoPreviewUrl: previewUrl,
     }),
 

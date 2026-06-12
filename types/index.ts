@@ -589,7 +589,8 @@ export interface InsightRelatedPost {
 export type KycDocumentId = 'aadhaar' | 'pan' | 'bar'
 
 export interface KycUploadedFile {
-  file: File
+  secure_url: string
+  public_id: string
   name: string
   sizeLabel: string
 }

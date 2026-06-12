@@ -109,7 +109,10 @@ export function OTPPanel({ email, onBack, onSuccess }: Props) {
           name: email.split('@')[0] ?? 'Advocate',
           role: 'lawyer',
         })
-        setTimeout(() => router.push('/dashboard'), 1500)
+        setTimeout(() => {
+          router.refresh()
+          router.push('/dashboard')
+        }, 1500)
       }
     } else {
       setError(true)

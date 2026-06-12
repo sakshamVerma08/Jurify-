@@ -4,8 +4,10 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth/auth";
 
 export async function requireAuth() {
+    const reqHeaders = await headers();
+    
     const session = await auth.api.getSession({
-        headers: await headers(),
+        headers: reqHeaders,
     });
 
     // Behind the scenes, better-auth does the following things:

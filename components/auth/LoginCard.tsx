@@ -23,6 +23,7 @@ export function LoginCard() {
           <LoginForm
             onLoginSuccess={(userEmail, isVerified) => {
               if (isVerified) {
+                router.refresh()
                 router.push('/dashboard')
               } else {
                 setEmail(userEmail)

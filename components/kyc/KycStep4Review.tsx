@@ -8,6 +8,7 @@ import { KycStepNav } from '@/components/kyc/KycStepNav'
 import { KYC_APPLICATION_ID } from '@/lib/data/kyc'
 import { useKycStore } from '@/stores/kycStore'
 import { useUiStore } from '@/stores/uiStore'
+import { submitKycApplication } from '@/actions/kyc/submit'
 
 export function KycStep4Review() {
   const step1 = useKycStore((s) => s.step1)
@@ -17,16 +18,32 @@ export function KycStep4Review() {
   const setStep = useKycStore((s) => s.setStep)
   const prevStep = useKycStore((s) => s.prevStep)
   const setShowSuccess = useKycStore((s) => s.setShowSuccess)
+  const setReferenceNumber = useKycStore((s) => s.setReferenceNumber)
   const isSubmitting = useKycStore((s) => s.isSubmitting)
   const setIsSubmitting = useKycStore((s) => s.setIsSubmitting)
   const showToast = useUiStore((s) => s.showToast)
 
   async function handleSubmit() {
     setIsSubmitting(true)
-    await new Promise((r) => setTimeout(r, 1800))
+    
+    const res = await submitKycApplication({
+      step1,
+      step3,
+      documents,
+      photo
+    })
+
     setIsSubmitting(false)
-    setShowSuccess(true)
-    showToast('Application submitted successfully', 'ok')
+
+    if (res.success) {
+      if (res.referenceNumber) {
+        setReferenceNumber(res.referenceNumber)
+      }
+      setShowSuccess(true)
+      showToast('Application submitted successfully', 'ok')
+    } else {
+      showToast(res.error || 'Failed to submit application', 'err')
+    }
   }
 
   const location = [step3.city, step3.state, step3.country].filter(Boolean).join(', ')
