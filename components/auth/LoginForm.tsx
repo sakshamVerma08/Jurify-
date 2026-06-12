@@ -12,9 +12,10 @@ import { JurifyLogoIcon } from '@/components/icons/JurifyLogoIcon'
 import { loginSchema, type LoginFormData } from '@/lib/validations/auth'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/stores/uiStore'
+import { signinAction } from '@/actions/auth/signin'
 
 interface Props {
-  onLoginSuccess: (email: string) => void
+  onLoginSuccess: (email: string, isVerified: boolean) => void
   onForgotPassword: () => void
 }
 
@@ -45,10 +46,23 @@ export function LoginForm({ onLoginSuccess, onForgotPassword }: Props) {
 
   async function onSubmit(data: LoginFormData) {
     setIsSubmitting(true)
-    await new Promise((resolve) => setTimeout(resolve, 1400))
+    const result = await signinAction(data)
     setIsSubmitting(false)
-    showToast('Code sent to your email', 'ok')
-    onLoginSuccess(data.email)
+
+    if (result.error) {
+      if ('root' in result.error && result.error.root) {
+        showToast(result.error.root[0], 'err')
+      } else {
+        showToast('Please check your input fields.', 'err')
+      }
+    } else if (result.success) {
+      if (result.isVerified) {
+        showToast('Welcome back!', 'ok')
+      } else {
+        showToast('Please verify your email. Code sent.', 'info')
+      }
+      onLoginSuccess(data.email, result.isVerified ?? false)
+    }
   }
 
   function handleGoogleLogin() {

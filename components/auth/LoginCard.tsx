@@ -5,12 +5,14 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { ForgotPasswordPanel } from '@/components/auth/ForgotPasswordPanel'
 import { LoginForm } from '@/components/auth/LoginForm'
 import { OTPPanel } from '@/components/auth/OTPPanel'
 import type { LoginPanel } from '@/types'
 
 export function LoginCard() {
+  const router = useRouter()
   const [panel, setPanel] = useState<LoginPanel>('login')
   const [email, setEmail] = useState('')
 
@@ -19,9 +21,13 @@ export function LoginCard() {
       <div className="login-card-in rounded-[22px] border border-white/[0.09] bg-[rgba(14,13,11,0.95)] px-9 pb-9 pt-10 shadow-[0_40px_100px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.03),inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-[20px]">
         {panel === 'login' && (
           <LoginForm
-            onLoginSuccess={(userEmail) => {
-              setEmail(userEmail)
-              setPanel('otp')
+            onLoginSuccess={(userEmail, isVerified) => {
+              if (isVerified) {
+                router.push('/dashboard')
+              } else {
+                setEmail(userEmail)
+                setPanel('otp')
+              }
             }}
             onForgotPassword={() => setPanel('forgot')}
           />
