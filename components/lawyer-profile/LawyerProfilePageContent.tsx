@@ -13,10 +13,10 @@ import { LawyerProfileSidebar } from '@/components/lawyer-profile/LawyerProfileS
 import { LawyerProfileStats } from '@/components/lawyer-profile/LawyerProfileStats'
 import { LawyerProfileTestimonials } from '@/components/lawyer-profile/LawyerProfileTestimonials'
 import { LAWYER_PROFILE } from '@/lib/data/lawyerProfile'
-import { LAWYER_LISTINGS } from '@/lib/data/lawyerSearch'
 
-export function LawyerProfilePageContent({ lawyerId }: { lawyerId: string }) {
-  const listing = lawyerId ? LAWYER_LISTINGS.find((l) => l.id === lawyerId) : null
+import type { LawyerListing } from '@/types'
+
+export function LawyerProfilePageContent({ listing }: { listing: LawyerListing }) {
 
   // If a listing is found, dynamically map its values onto a LawyerProfile structure
   const profile = listing

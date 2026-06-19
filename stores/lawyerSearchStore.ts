@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { LAWYER_LISTINGS, filterAndSortLawyers } from '@/lib/data/lawyerSearch'
+import { filterAndSortLawyers } from '@/lib/data/lawyerSearch'
 import type {
   LawyerListing,
   LawyerSearchRole,
@@ -52,7 +52,7 @@ const defaultFilters = {
 }
 
 export const useLawyerSearchStore = create<LawyerSearchState>((set, get) => ({
-  lawyers: LAWYER_LISTINGS.map((l) => ({ ...l })),
+  lawyers: [],
   viewRole: 'client',
   viewMode: 'grid',
   ...defaultFilters,

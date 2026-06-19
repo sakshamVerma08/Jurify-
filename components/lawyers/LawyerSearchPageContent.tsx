@@ -12,8 +12,10 @@ import { LawyerSearchToolbar } from '@/components/lawyers/LawyerSearchToolbar'
 import { filterAndSortLawyers } from '@/lib/data/lawyerSearch'
 import { cn } from '@/lib/utils'
 import { useLawyerSearchStore } from '@/stores/lawyerSearchStore'
+import { useEffect } from 'react'
+import type { LawyerListing } from '@/types'
 
-export function LawyerSearchPageContent() {
+export function LawyerSearchPageContent({ initialLawyers }: { initialLawyers: LawyerListing[] }) {
   const viewRole = useLawyerSearchStore((s) => s.viewRole)
   const viewMode = useLawyerSearchStore((s) => s.viewMode)
   const lawyers = useLawyerSearchStore((s) => s.lawyers)
@@ -25,6 +27,11 @@ export function LawyerSearchPageContent() {
   const languages = useLawyerSearchStore((s) => s.languages)
   const locations = useLawyerSearchStore((s) => s.locations)
   const sortBy = useLawyerSearchStore((s) => s.sortBy)
+
+  // Hydrate store on mount
+  useEffect(() => {
+    useLawyerSearchStore.setState({ lawyers: initialLawyers })
+  }, [initialLawyers])
 
   const filtered = filterAndSortLawyers(lawyers, {
     searchQuery,

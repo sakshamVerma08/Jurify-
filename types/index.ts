@@ -103,7 +103,7 @@ export type ToastType = 'ok' | 'err' | 'info'
 
 export type UserRole = 'lawyer' | 'client'
 
-export type RegisterStep = 1 | 2 | 3
+export type RegisterStep = 1 | 2 | 3 | 4
 
 export interface RoleOption {
   id: UserRole
@@ -150,6 +150,7 @@ export interface LegalCase {
   id: string
   title: string
   category: string
+  isProBono: boolean
   stage: CaseStage
   stageLabel: string
   urgency: CaseUrgency
@@ -189,6 +190,7 @@ export interface MyPostedCase {
   id: string
   title: string
   category: string
+  isProBono: boolean
   location: string
   postedAgo: string
   stage: CaseStage
@@ -225,6 +227,7 @@ export interface CaseFilters {
   stages: CaseStage[]
   search: string
   sort: CaseSortOption
+  proBonoOnly: boolean
 }
 
 export const CASE_CATEGORIES = [
@@ -466,6 +469,7 @@ export interface LawyerProfile {
   experienceYears: number
   connections: number
   proBonoAvailable: boolean
+  verified: boolean
   bio: string[]
   videoLabel: string
   credentials: LawyerCredential[]
@@ -589,7 +593,8 @@ export interface InsightRelatedPost {
 export type KycDocumentId = 'aadhaar' | 'pan' | 'bar'
 
 export interface KycUploadedFile {
-  file: File
+  secure_url: string
+  public_id: string
   name: string
   sizeLabel: string
 }
@@ -633,6 +638,7 @@ export interface ProfileData {
   practiceAreas: string[]
   languages: string[]
   bio: string
+  isVerified: boolean
 
   videoName: string | null
   videoDate: string | null

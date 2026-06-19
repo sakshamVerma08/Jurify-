@@ -52,13 +52,13 @@ class PineconeVectorStore:
 
     def __init__(
         self,
-        index_name: str,
-        dimension: int,
         api_key: str,
+        index_name: str = "jurify-rag",
+        dimension: int = 384,
         namespace: str = "",
         cloud: str = "aws",
         region: str = "us-east-1",
-        metric: str = "cosine"
+        metric: str = "cosine",
     ):
         # Import here so the rest of the package doesn't require pinecone-client
         # to be installed (useful for unit-testing the chunker in isolation).

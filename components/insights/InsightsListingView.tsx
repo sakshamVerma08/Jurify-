@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { InsightsFeaturedPost } from '@/components/insights/InsightsFeaturedPost'
 import { InsightsPostCard } from '@/components/insights/InsightsPostCard'
 import type { InsightSortOption } from '@/types'
+import { useSession } from '@/lib/auth/auth-client'
 
 export function InsightsListingView() {
   const searchQuery = useInsightsStore((s) => s.searchQuery)
@@ -25,6 +26,7 @@ export function InsightsListingView() {
   const getFeatured = useInsightsStore((s) => s.getFeatured)
   const getFilteredGridArticles = useInsightsStore((s) => s.getFilteredGridArticles)
   const showToast = useUiStore((s) => s.showToast)
+  const { data: session } = useSession()
 
   const featured = useMemo(() => getFeatured(), [getFeatured])
   const filtered = useMemo(
@@ -69,12 +71,14 @@ export function InsightsListingView() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <button type="button" className="ins-write-btn" onClick={() => router.push('/insights/write')}>
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden>
-                  <path d="M2 9.5l1-3L9.5 1l2 2-6.5 6.5-3 1z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                Write
-              </button>
+              {session && (session.user as any).role === 'LAWYER' && (
+                <button type="button" className="ins-write-btn" onClick={() => router.push('/insights/write')}>
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden>
+                    <path d="M2 9.5l1-3L9.5 1l2 2-6.5 6.5-3 1z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Write
+                </button>
+              )}
             </div>
           </div>
         </div>

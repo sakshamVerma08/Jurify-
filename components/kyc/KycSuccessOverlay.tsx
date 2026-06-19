@@ -4,12 +4,12 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { KYC_APPLICATION_ID } from '@/lib/data/kyc'
 import { useKycStore } from '@/stores/kycStore'
 
 export function KycSuccessOverlay() {
   const router = useRouter()
   const showSuccess = useKycStore((s) => s.showSuccess)
+  const referenceNumber = useKycStore((s) => s.referenceNumber)
 
   if (!showSuccess) return null
 
@@ -36,7 +36,7 @@ export function KycSuccessOverlay() {
             <circle cx="7" cy="7" r="5.5" stroke="#4ade80" strokeWidth="1.2" />
             <path d="M4.5 7l2 2 3-3" stroke="#4ade80" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Application ID: {KYC_APPLICATION_ID}
+          Application ID: {referenceNumber || 'Pending'}
         </div>
         <button
           type="button"

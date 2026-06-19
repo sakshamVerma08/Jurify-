@@ -94,6 +94,33 @@ export function FilterPanel() {
 
       <div className="my-1.5 mb-5 h-px bg-white/[0.05]" />
 
+      <FilterGroup label="Pro Bono">
+        <label
+          className="flex cursor-pointer items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-[13px] text-[var(--tm)] transition-all duration-150 hover:bg-white/[0.04] hover:text-[var(--t)]"
+          onClick={(e) => {
+            e.preventDefault()
+            useCasesStore.getState().setProBonoOnly(!filters.proBonoOnly)
+          }}
+        >
+          <span>Pro Bono Cases Only</span>
+          <div
+            className={cn(
+              'flex h-[18px] w-[32px] shrink-0 items-center rounded-full p-[2px] transition-colors duration-200 ease-in-out',
+              filters.proBonoOnly ? 'bg-success' : 'bg-white/10'
+            )}
+          >
+            <div
+              className={cn(
+                'h-3.5 w-3.5 rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out',
+                filters.proBonoOnly ? 'translate-x-[14px]' : 'translate-x-0'
+              )}
+            />
+          </div>
+        </label>
+      </FilterGroup>
+
+      <div className="my-1.5 mb-5 h-px bg-white/[0.05]" />
+
       <FilterGroup label="Case Stage">
         <div className="flex flex-col gap-1.5">
           {CASE_STAGES_FILTER.map((stage) => (

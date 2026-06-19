@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { AI_DEMO_DOCUMENT } from '@/lib/data/ai'
-import { formatMessageTime, generateAiResponse, guessDocType } from '@/lib/ai/responses'
+import { formatMessageTime, guessDocType } from '@/lib/ai/responses'
 import type { AiMessage, AiScreen, AiUploadedDocument } from '@/types'
 
 function createId(): string {
@@ -150,12 +150,29 @@ export const useAiStore = create<AiState>((set, get) => ({
     const delay = 1200 + Math.random() * 800
     await new Promise((r) => setTimeout(r, delay))
 
-    const response = generateAiResponse(trimmed, hasDocument)
+    let responseText = ''
+    try {
+      const resp = await fetch('http://localhost:8000/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: trimmed }),
+      })
+      if (resp.ok) {
+        const data = await resp.json()
+        responseText = data.response ?? ''
+      } else {
+        console.error('Query API error:', resp.statusText)
+        responseText = 'Error: failed to get response from server.'
+      }
+    } catch (err) {
+      console.error('Fetch error:', err)
+      responseText = 'Error: unable to reach query service.'
+    }
     const aiMessage: AiMessage = {
       id: createId(),
       role: 'ai',
-      content: response.text,
-      followups: response.followups,
+      content: responseText,
+      followups: [],
       timestamp: formatMessageTime(),
       showTime: true,
     }

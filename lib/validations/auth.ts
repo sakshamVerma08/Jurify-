@@ -2,9 +2,8 @@ import { z } from 'zod'
 
 export const loginSchema = z.object({
   email: z
-    .string()
-    .min(1, 'Email address is required')
-    .email('Please enter a valid email address'),
+    .email('Please enter a valid email address')
+    .min(1, 'Email is required'),
   password: z
     .string()
     .min(1, 'Password is required')
@@ -15,9 +14,8 @@ export type LoginFormData = z.infer<typeof loginSchema>
 
 export const forgotPasswordSchema = z.object({
   email: z
-    .string()
-    .min(1, 'Email address is required')
-    .email('Please enter a valid email address'),
+    .email('Please enter a valid email address')
+    .min(1, 'Email address is required'),
 })
 
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>
@@ -33,9 +31,10 @@ export type OtpFormData = z.infer<typeof otpSchema>
 
 const phoneDigits = (value: string) => value.replace(/[\s\-()]/g, '')
 
-export function createRegisterSchema(role: 'lawyer' | 'client') {
+export const registerSchema = () => {
   return z
     .object({
+      role: z.enum(['LAWYER', 'CLIENT']),
       firstName: z
         .string()
         .min(1, 'Enter your first name')
@@ -45,9 +44,8 @@ export function createRegisterSchema(role: 'lawyer' | 'client') {
         .min(1, 'Enter your last name')
         .min(2, 'Must be at least 2 characters'),
       email: z
-        .string()
-        .min(1, 'Email address is required')
-        .email('Enter a valid email address'),
+        .email('Enter a valid email address')
+        .min(1, 'Email address is required'),
       phoneCode: z.string(),
       phone: z
         .string()
@@ -68,7 +66,7 @@ export function createRegisterSchema(role: 'lawyer' | 'client') {
       path: ['confirmPassword'],
     })
     .superRefine((data, ctx) => {
-      if (role === 'lawyer' && !data.barCouncilState) {
+      if (data.role === 'LAWYER' && !data.barCouncilState) {
         ctx.addIssue({
           code: 'custom',
           message: 'Please select your Bar Council state',
@@ -78,7 +76,7 @@ export function createRegisterSchema(role: 'lawyer' | 'client') {
     })
 }
 
-export type RegisterFormData = z.infer<ReturnType<typeof createRegisterSchema>>
+export type RegisterFormData = z.infer<ReturnType<typeof registerSchema>>
 
 export interface PasswordStrength {
   width: string

@@ -6,13 +6,20 @@ import { LawyerSearchPageContent } from '@/components/lawyers/LawyerSearchPageCo
 import { Navbar } from '@/components/layout/Navbar'
 import { Toast } from '@/components/ui/Toast'
 
-export default function LawyersPage() {
+import { getLawyersAction } from '@/actions/lawyers/browse'
+
+export const dynamic = 'force-dynamic'
+
+export default async function LawyersPage() {
+  const result = await getLawyersAction()
+  const initialLawyers = result.success && result.data ? result.data : []
+
   return (
     <div className="lawyer-search-bg min-h-screen bg-bg">
       <Navbar />
       <Toast />
       <div className="relative z-[1] pt-[68px]">
-        <LawyerSearchPageContent />
+        <LawyerSearchPageContent initialLawyers={initialLawyers} />
       </div>
     </div>
   )

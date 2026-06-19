@@ -109,13 +109,15 @@ export function LawyerProfileHero({ profile }: LawyerProfileHeroProps) {
           <h1 className="font-serif text-[34px] font-normal leading-[1.08] tracking-[-0.4px] text-[var(--t)]">
             {profile.name}
           </h1>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-og/30 bg-og/10 px-[11px] py-1 text-[11px] font-semibold text-og">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-              <path d="M5 1L2 2.5v2.8c0 2.2 1.4 3.8 3 4.2C6.6 9.1 8 7.5 8 5.3V2.5L5 1z" stroke="#D4853A" strokeWidth=".9" strokeLinejoin="round" />
-              <path d="M3.5 5l1.2 1.2L7 3.5" stroke="#D4853A" strokeWidth=".9" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Bar Council Verified
-          </span>
+          {profile.verified && (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-og/30 bg-og/10 px-[11px] py-1 text-[11px] font-semibold text-og">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                <path d="M5 1L2 2.5v2.8c0 2.2 1.4 3.8 3 4.2C6.6 9.1 8 7.5 8 5.3V2.5L5 1z" stroke="#D4853A" strokeWidth=".9" strokeLinejoin="round" />
+                <path d="M3.5 5l1.2 1.2L7 3.5" stroke="#D4853A" strokeWidth=".9" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Bar Council Verified
+            </span>
+          )}
         </div>
 
         <p className="mb-3.5 text-[15px] font-light text-[var(--tm)]">{profile.degree}</p>

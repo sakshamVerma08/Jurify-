@@ -4,18 +4,61 @@
 'use client'
 
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
+import { getMyCasesAction, closeCaseAction, acceptLawyerAction } from '@/actions/cases/client'
 import { ProgressTracker } from '@/components/ui/ProgressTracker'
 import { cn } from '@/lib/utils'
 import { useCasesStore } from '@/stores/casesStore'
 import { useUiStore } from '@/stores/uiStore'
+import type { MyPostedCase } from '@/types'
+
+import { CaseCardSkeleton } from '@/components/ui/CaseCardSkeleton'
 
 export function MyCasesTab() {
   const myPostedCases = useCasesStore((s) => s.myPostedCases)
+  const setMyPostedCases = useCasesStore((s) => s.setMyPostedCases)
+  const [loading, setLoading] = useState(true)
+
   const openEditModal = useCasesStore((s) => s.openEditModal)
-  const closePostedCase = useCasesStore((s) => s.closePostedCase)
   const assignLawyerToCase = useCasesStore((s) => s.assignLawyerToCase)
   const openPostModal = useCasesStore((s) => s.openPostModal)
   const showToast = useUiStore((s) => s.showToast)
+
+  async function fetchCases() {
+    setLoading(true)
+    const res = await getMyCasesAction()
+    if (res.success && res.cases) {
+      setMyPostedCases(res.cases)
+    } else {
+      showToast(res.error || 'Failed to fetch cases', 'err')
+    }
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    fetchCases()
+  }, [])
+
+  async function handleCloseCase(caseId: string) {
+    const res = await closeCaseAction(caseId)
+    if (res.success) {
+      showToast('Case closed and removed.', 'info')
+      fetchCases()
+    } else {
+      showToast(res.error || 'Failed to close case', 'err')
+    }
+  }
+
+  async function handleAssignLawyer(caseId: string, lawyerId: string, lawyerName: string) {
+    showToast(`Assigning case to ${lawyerName}...`, 'info')
+    const res = await acceptLawyerAction(caseId, lawyerId)
+    if (res.success) {
+      showToast(`Assigned case representation to ${lawyerName}!`, 'ok')
+      fetchCases()
+    } else {
+      showToast(res.error || 'Failed to assign lawyer', 'err')
+    }
+  }
 
   return (
     <div className="px-[60px] pb-[60px] pt-8 max-md:px-6">
@@ -25,7 +68,13 @@ export function MyCasesTab() {
         count={`${myPostedCases.length} case${myPostedCases.length !== 1 ? 's' : ''}`}
       />
 
-      {myPostedCases.length === 0 ? (
+      {loading ? (
+        <div className="flex max-w-[900px] flex-col gap-5">
+          {[...Array(3)].map((_, i) => (
+            <CaseCardSkeleton key={i} index={i} />
+          ))}
+        </div>
+      ) : myPostedCases.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.04] text-[var(--td)]">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -86,10 +135,7 @@ export function MyCasesTab() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
-                        closePostedCase(item.id)
-                        showToast('Case closed and removed.', 'info')
-                      }}
+                      onClick={() => handleCloseCase(item.id)}
                       className="cursor-pointer rounded-lg border border-danger/20 bg-transparent px-3.5 py-1.5 font-sans text-[11.5px] text-[rgba(240,130,130,0.7)] transition-all duration-200 hover:bg-danger/10 hover:text-danger"
                     >
                       Close Case
@@ -181,10 +227,7 @@ export function MyCasesTab() {
                             </Link>
                             <button
                               type="button"
-                              onClick={() => {
-                                assignLawyerToCase(item.id, lawyer.id, lawyer.name, lawyer.initials)
-                                showToast(`Assigned case representation to ${lawyer.name}!`, 'ok')
-                              }}
+                              onClick={() => handleAssignLawyer(item.id, lawyer.id, lawyer.name)}
                               className="cursor-pointer whitespace-nowrap rounded-lg bg-og/10 border border-og/25 px-3.5 py-1.5 font-sans text-xs font-semibold text-o2 transition-all duration-200 hover:bg-og hover:text-white"
                             >
                               Hire &amp; Assign Case

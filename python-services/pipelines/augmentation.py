@@ -18,10 +18,10 @@ class AugmentationPipeline:
         self.retrieved_docs = retrieved_docs
         self.prompt=""
 
-    def build_prompt(self, query: str, retrieved_docs: Dict[str,Any]):
+    def build_prompt(self):
 
         context = "\n\n".join(
-            s["text"] for s in retrieved_docs
+            s["text"] for s in self.retrieved_docs
         )
 
         prompt = f"""

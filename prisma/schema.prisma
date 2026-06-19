@@ -2,261 +2,199 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-/**
- * =========================
- * Enums
- * =========================
- */
+// =============================================================================
+// ENUMS
+// =============================================================================
 
-// Client's Role
 enum Role {
-  USER
+  CLIENT
   LAWYER
+  ADMIN
+  SUPER_ADMIN
 }
 
-enum VerificationType {
-  IDENTITY // government issued ID cards etc.
-  BAR_LICENSE // bar council license
-  EMAIL
-  PHONE
-  EDUCATION //educational qualification verification
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+  DEACTIVATED
 }
 
-// For Lawyer/User Verification status
+enum LawyerAvailability {
+  PAID
+  PRO_BONO
+  BOTH
+}
+
 enum VerificationStatus {
+  UNVERIFIED
   PENDING
-  VERIFIED
+  APPROVED
   REJECTED
-  EXPIRED
 }
 
-//for case category
-enum CaseCategory {
-  FAMILY_LAW
-  CRIMINAL_LAW
-  CIVIL_LAW
-  CORPORATE_LAW
-  PROPERTY_LAW
-  LABOR_LAW
-  TAX_LAW
-  INTELLECTUAL_PROPERTY_LAW
-  CONSTITUTIONAL_LAW
-  ENVIRONMENTAL_LAW
-  IMMIGRATION_LAW
-  BANKING_LAW
-  CYBER_LAW
+enum KycStep {
+  FORM_SUBMITTED
+  DOCUMENTS_RECEIVED
+  INITIAL_SCREENING
+  ADMIN_REVIEW
+  BAR_COUNCIL_VERIFICATION
+  FINAL_APPROVAL
 }
 
+enum KycDocType {
+  AADHAAR
+  PAN
+  BAR_CERTIFICATE
+  DEGREE_CERTIFICATE
+  PROFILE_PHOTO
+}
 
-// for case status
+enum CaseStatus {
+  OPEN
+  ACTIVE
+  RESOLVED
+  CLOSED
+  FLAGGED
+  REMOVED
+}
+
 enum CaseStage {
   INITIAL_CONSULTATION
   INVESTIGATION
-  FILING
-  HEARING
+  PRE_HEARING
   TRIAL
-  JUDGMENT
   APPEAL
-  CLOSED
+  VERDICT
 }
 
-// Don't know it's purpose
-enum ConnectionStatus {
-  PENDING
-  ACCEPTED
-  DECLINED
-  BLOCKED
-}
-
-// for case urgency status
-enum Urgency {
+enum CaseUrgency {
   LOW
   MEDIUM
   HIGH
   CRITICAL
 }
 
-// don't know what for
 enum ApplicationStatus {
-  SUBMITTED
-  UNDER_REVIEW
+  PENDING
   ACCEPTED
   REJECTED
   WITHDRAWN
 }
 
-// For chat communication
-enum MessageRole {
-  USER
-  LAWYER
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  BLOCKED
 }
 
-//for lawyer profile settings
-enum Visibility {
-  PUBLIC
-  UNLISTED
-  PRIVATE
-}
-
-// For blog posts
 enum PostStatus {
   DRAFT
+  UNDER_REVIEW
   PUBLISHED
+  FEATURED
   ARCHIVED
+  REMOVED
 }
 
-/**
- * ================
- * Core Accounts
- * ===============
- */
-
-// A single 'user' model with a 'role' field whose 'enums' are defined above
-
-model User {
-  id            String   @id @default(cuid())
-  email         String   @unique
-  name          String
-  phoneNo       String?
-  role          Role     @default(USER)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  image         String?
-  emailVerified Boolean  @default(false)
-
-  // Right now, if User role == USER, then he will only see above fields in his Profile, but if User role == LAWYER, then below fields will apply including LawyerProfile sub-fields
-
-  // Profile and expertise. Right now commente out, make it slowly by seeing dummySchema.txt and deciding what to bring 
-  // and what not to bring.
-  /**
-   * /**
-   * /**
-   * /**
-   * /**
-   * /**
-   * /**
-   * /**
-   * /**
-   * profile        LawyerProfile?
-   * verifications  Verification[]
-   * certifications Certifications[]
-   * educations     Education[]
-   * experiences    WorkExperience[]
-   * skills         UserSkill[]
-   * practiceAreas  UserPracticeArea[]
-   * // Networking
-   * connectionsInitiated Connection[] @relation("connections_initiated")
-   * connectionsReceived Connection[] @relation("connections_received")
-   * // Cases
-   */
-  postedCases   Case[]
-  /**
-   * applications CaseApplication[]
-   * assignments  CaseAssignment[]
-   * //Content
-   * blogPosts BlogPost[]
-   * comments  Comment[]
-   * likes     PostLike[]
-   * //AI /Documents
-   * chatSessions ChatSession[]
-   * documents    Document[]
-   */
-  lawyerProfile LawyerProfile?
-  sessions      Session[]
-  accounts      Account[]
-
-  @@map("user")
+enum MessageType {
+  TEXT
+  FILE
+  IMAGE
+  SYSTEM
 }
 
-model LawyerProfile {
-  id                    String   @id @default(cuid())
-  userId                String   @unique
-  title                 String?
-  bio                   String?
-  location              String?
-  barNumber             String?
-  barCouncil            String?
-  yearsOfExperience     Int?     @default(0)
-  caseCount             Int?     @default(0)
-  hourlyRate            Int?
-  isAvailableForProBono Boolean  @default(true)
-  website               String?
-  linkedinUrl           String?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  user                  User     @relation(fields: [userId], references: [id])
-
-  // Basically, we index the aforementioned columns, so when our db query searches, it can search on this indexed field, which improves our query performance.
-
-  @@index([yearsOfExperience])
-  @@index([isAvailableForProBono])
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
 }
 
-model Case {
-  id             String     @id @default(cuid())//This will be our primary key.
-  title          String     @db.VarChar(255)
-  description    String     @db.Text
-
-  //We will store only city,state and country of the case location,it will ensure that we can find the lawyers in that location and 
-  //keep the full address private for security and privacy reasons.If required full address can be shared later to the lawyers itself through chats.
-  city    String @db.VarChar(100)
-  state   String @db.VarChar(100)
-  country String @db.VarChar(100) @default("India")
-  postedByUser   String // This is a Foreign Key.
-  postedBy       User       @relation(fields: [postedByUser], references: [id]) // This is a Prisma navigation field, this uses
-  // 'postedByUser' to locate the actual User who posted the Case.
-  category       CaseCategory
-  stage          CaseStage @default(INITIAL_CONSULTATION)
-  deadline       DateTime?
-  urgency        Urgency    @default(MEDIUM)
-  proBono        Boolean    @default(false) // denotes whether a case is proBono category or not.
-
-  //opposing party details
-  opposingName         String?    @db.VarChar(100)
-  opposingRelationship String?    @db.VarChar(100)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime? //for soft delete, becuase we shouldn't delete the cases permanently.
-
-
-  //Need to add caseAssignments/Assignment tracking for lawyers.
-  @@index([postedByUser])
-  @@index([category])
-  @@index([stage])
-  @@index([deletedAt])
-  @@index([city, state])
-  @@index([state, category])
-  @@index([category, stage])
-  @@index([proBono])
-  @@index([deletedAt, category])
-  @@index([createdAt])
+enum NotificationType {
+  CASE_UPDATE
+  NEW_APPLICATION
+  APPLICATION_ACCEPTED
+  APPLICATION_REJECTED
+  CONNECTION_REQUEST
+  CONNECTION_ACCEPTED
+  NEW_MESSAGE
+  KYC_APPROVED
+  KYC_REJECTED
+  HEARING_REMINDER
+  DEADLINE_ALERT
+  SECURITY_ALERT
+  SYSTEM_ANNOUNCEMENT
+  BLOG_COMMENT
+  BLOG_PUBLISHED
 }
 
-/**
- * ==================
- * Expertise: Practice Areas & Skills
- * =================
- */
+enum ReportType {
+  FAKE_PROFILE
+  SPAM_CASE
+  INAPPROPRIATE_CONTENT
+  FRAUD
+  HARASSMENT
+  COPYRIGHT
+  OTHER
+}
 
-// Specifically for Lawyers, they can select their practice areas during profile setup. Check if you can do practiceArea? to this field in 'User' model.
-/**
- * model PracticeArea {
- * id   Int    @id @default(autoincrement())
- * name String @unique
- * slug String @unique
- * users UserPracticeArea[]
- * cases CasePracticeArea[]
- * }
- */
+enum ReportStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  DISMISSED
+}
 
-//Below  Session Model & Account model are Required/Expected by Better-Auth for working properly.
+enum ReportPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AuditActionType {
+  USER_CREATED
+  USER_UPDATED
+  USER_SUSPENDED
+  USER_ACTIVATED
+  USER_DELETED
+  LOGIN_SUCCESS
+  LOGIN_FAILED
+  LOGOUT
+  PASSWORD_CHANGED
+  TWO_FACTOR_ENABLED
+  TWO_FACTOR_DISABLED
+  SESSION_REVOKED
+  KYC_SUBMITTED
+  KYC_APPROVED
+  KYC_REJECTED
+  CASE_CREATED
+  CASE_UPDATED
+  CASE_FLAGGED
+  CASE_REMOVED
+  APPLICATION_SUBMITTED
+  APPLICATION_ACCEPTED
+  APPLICATION_REJECTED
+  POST_PUBLISHED
+  POST_FEATURED
+  POST_REMOVED
+  REPORT_RESOLVED
+  REPORT_DISMISSED
+  ADMIN_ACTION
+  SETTINGS_CHANGED
+}
+
+// =============================================================================
+// BETTER-AUTH REQUIRED MODELS
+// These three models are mandatory for better-auth to function.
+// =============================================================================
 
 model Session {
   id        String   @id @default(cuid())
@@ -267,38 +205,864 @@ model Session {
   userAgent String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("session")
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+  @@map("sessions")
 }
 
 model Account {
-  id                   String    @id @default(cuid())
-  userId               String
-  accountId            String
-  providerId           String
-  accessToken          String?   @db.Text
-  idToken              String?   @db.Text
-  refreshToken         String?   @db.Text
-  accessTokenExpiresAt DateTime?
-  scope                String?
-  password             String?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
-  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String    // "credential" | "google"
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?   @db.Text
+  password              String?   // bcrypt hashed, only for "credential" provider
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-  @@index([providerId])
-  @@map("account")
+  @@map("accounts")
 }
 
+// Used by better-auth for email verification OTPs and password reset tokens
 model Verification {
   id         String   @id @default(cuid())
-  identifier String
-  value      String
+  identifier String   // email address or phone number
+  value      String   // the OTP or token value
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  @@map("verification")
+  @@unique([identifier, value])
+  @@index([identifier])
+  @@index([expiresAt])
+  @@map("verifications")
+}
+
+// =============================================================================
+// CORE USER
+// =============================================================================
+
+model User {
+  id               String     @id @default(cuid())
+  email            String     @unique
+  name             String
+  emailVerified    Boolean    @default(false)   // required by better-auth
+  image            String?                       // required by better-auth
+  role             Role       @default(CLIENT)
+  status           UserStatus @default(ACTIVE)
+  twoFactorEnabled Boolean    @default(false)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  lastLoginAt      DateTime?
+  lastLoginIp      String?
+
+  // better-auth relations
+  sessions              Session[]
+  accounts              Account[]
+
+  // profile relations — only one will be set based on role
+  clientProfile         ClientProfile?
+  lawyerProfile         LawyerProfile?
+
+  // cases
+  postedCases           Case[]                   @relation("ClientCases")
+  caseApplications      CaseApplication[]
+  savedCases            SavedCase[]
+
+  // content
+  blogPosts             BlogPost[]
+  comments              Comment[]
+  postLikes             PostLike[]
+  savedPosts            SavedPost[]
+  commentLikes          CommentLike[]
+
+  // network
+  connectionsInitiated  Connection[]             @relation("ConnectionRequester")
+  connectionsReceived   Connection[]             @relation("ConnectionReceiver")
+  conversationsJoined   ConversationParticipant[]
+  messagesSent          Message[]
+
+  // ai
+  chatSessions          ChatSession[]
+  uploadedDocuments     Document[]
+
+  // platform
+  notifications         Notification[]
+  preferences           UserPreference?
+  reports               AdminReport[]            @relation("ReportedBy")
+  reportedAsUser        AdminReport[]            @relation("ReportedUser")
+  auditLogsPerformed    AuditLog[]               @relation("AuditPerformer")
+  auditLogsTargeted     AuditLog[]               @relation("AuditTarget")
+
+  @@index([email])
+  @@index([role])
+  @@index([status])
+  @@index([createdAt])
+  @@map("users")
+}
+
+// =============================================================================
+// PROFILES
+// =============================================================================
+
+model ClientProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  firstName String
+  lastName  String
+  phone     String?
+  dob       DateTime?
+  city      String?
+  state     String?
+  country   String   @default("India")
+  photoUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("client_profiles")
+}
+
+model LawyerProfile {
+  id                 String             @id @default(cuid())
+  userId             String             @unique
+  firstName          String
+  lastName           String
+  displayName        String
+  phone              String?
+  dob                DateTime?
+
+  // professional credentials
+  enrollmentNo       String?            @unique
+  barCouncilState    String?
+  enrollmentYear     Int?
+  degree             String?
+  university         String?
+  yearsOfExperience  Int                @default(0)
+  primaryCourt       String?
+  practiceAreas      String[]           // denormalised array for fast display
+  languages          String[]
+  bio                String?            @db.Text
+  consultationFee    Decimal?           @db.Decimal(10, 2)
+  availability       LawyerAvailability @default(BOTH)
+
+  // media
+  photoUrl           String?
+  videoKey           String?            // S3 key for profile video
+  videoUploadedAt    DateTime?
+
+  // stats — denormalised counters updated by triggers or background jobs
+  rating             Decimal            @default(0) @db.Decimal(3, 2)
+  reviewCount        Int                @default(0)
+  successRate        Decimal            @default(0) @db.Decimal(5, 2)
+  casesHandled       Int                @default(0)
+  proBonoHours       Int                @default(0)
+  connectionCount    Int                @default(0)
+  reputationPoints   Int                @default(0)
+  profileCompleteness Int               @default(0)
+
+  // location
+  city               String?
+  state              String?
+  country            String             @default("India")
+
+  // verification
+  isVerified         Boolean            @default(false)
+  verificationStatus VerificationStatus @default(UNVERIFIED)
+  verifiedAt         DateTime?
+  verifiedBy         String?
+
+  // visibility settings
+  isPublic           Boolean            @default(true)
+  isSearchable       Boolean            @default(true)
+  showContactInfo    Boolean            @default(true)
+  showOnlineStatus   Boolean            @default(false)
+
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kycApplication     KycApplication?
+  reviews            LawyerReview[]
+  applications       CaseApplication[]
+
+  @@index([verificationStatus])
+  @@index([barCouncilState])
+  @@index([availability])
+  @@index([rating])
+  @@index([city, state])
+  @@index([isVerified])
+  @@map("lawyer_profiles")
+}
+
+// =============================================================================
+// KYC VERIFICATION FLOW
+// Handles the entire KYC page, admin verification panel,
+// and the application status tracker page.
+// =============================================================================
+
+model KycApplication {
+  id              String             @id @default(cuid())
+  lawyerId        String             @unique
+  referenceNumber String             @unique  // e.g. JRF-2026-DL-48291
+  idempotencyKey  String?            @unique
+  status          VerificationStatus @default(PENDING)
+  currentStep     KycStep            @default(FORM_SUBMITTED)
+  rejectionReason String?            @db.Text
+  reviewedBy      String?
+  attemptNumber   Int                @default(1)
+  submittedAt     DateTime           @default(now())
+  reviewedAt      DateTime?
+  completedAt     DateTime?
+
+  lawyer          LawyerProfile      @relation(fields: [lawyerId], references: [id], onDelete: Cascade)
+  documents       KycDocument[]
+  statusEvents    KycStatusEvent[]
+
+  @@index([status])
+  @@index([referenceNumber])
+  @@map("kyc_applications")
+}
+
+model KycDocument {
+  id            String             @id @default(cuid())
+  applicationId String
+  type          KycDocType
+  fileKey       String             // S3 key
+  fileName      String
+  fileSize      Int?
+  mimeType      String?
+  status        VerificationStatus @default(PENDING)
+  notes         String?
+  uploadedAt    DateTime           @default(now())
+  verifiedAt    DateTime?
+
+  application   KycApplication     @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@map("kyc_documents")
+}
+
+// Every time an admin moves the application forward or back,
+// a row is inserted here. This powers the status tracker timeline.
+model KycStatusEvent {
+  id            String             @id @default(cuid())
+  applicationId String
+  step          KycStep
+  status        VerificationStatus
+  note          String?
+  performedBy   String?            // admin display name or "System"
+  createdAt     DateTime           @default(now())
+
+  application   KycApplication     @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@index([createdAt])
+  @@map("kyc_status_events")
+}
+
+model LawyerReview {
+  id        String        @id @default(cuid())
+  lawyerId  String
+  clientId  String
+  caseId    String?
+  rating    Int           // 1–5
+  comment   String?       @db.Text
+  createdAt DateTime      @default(now())
+
+  lawyer    LawyerProfile @relation(fields: [lawyerId], references: [id], onDelete: Cascade)
+
+  @@index([lawyerId])
+  @@map("lawyer_reviews")
+}
+
+// =============================================================================
+// CASES
+// =============================================================================
+
+model Case {
+  id                   String      @id @default(cuid())
+  clientId             String
+  idempotencyKey       String?     @unique
+  title                String
+  description          String      @db.Text
+  category             String
+  isProBono            Boolean     @default(true)
+  stage                CaseStage   @default(INITIAL_CONSULTATION)
+  urgency              CaseUrgency @default(MEDIUM)
+  status               CaseStatus  @default(OPEN)
+  location             String?
+  incidentDate         DateTime?
+  deadline             DateTime?
+
+  // opposing party — from your post case modal
+  opposingParty        String?
+  opposingRelationship String?
+
+  // contact details from the form
+  contactName          String?
+  contactEmail         String?
+  contactPhone         String?
+  contactAddress       String?     @db.Text
+
+  // moderation
+  isFlagged            Boolean     @default(false)
+  flaggedReason        String?
+
+  // counters
+  viewCount            Int         @default(0)
+  applicationCount     Int         @default(0)
+
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  resolvedAt           DateTime?
+
+  client               User            @relation("ClientCases", fields: [clientId], references: [id], onDelete: Cascade)
+  applications         CaseApplication[]
+  documents            CaseDocument[]
+  savedBy              SavedCase[]
+  conversations        Conversation[]
+  reports              AdminReport[]   @relation("ReportedCase")
+
+  @@index([clientId])
+  @@index([status])
+  @@index([category])
+  @@index([urgency])
+  @@index([createdAt])
+  @@index([deadline])
+  @@map("cases")
+}
+
+model CaseDocument {
+  id         String   @id @default(cuid())
+  caseId     String
+  fileKey    String
+  fileName   String
+  fileSize   Int?
+  mimeType   String?
+  uploadedAt DateTime @default(now())
+
+  case       Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([caseId])
+  @@map("case_documents")
+}
+
+model CaseApplication {
+  id          String            @id @default(cuid())
+  caseId      String
+  lawyerId    String            // references User.id (lawyer role)
+  profileId   String?           // references LawyerProfile.id for easier joins
+  status      ApplicationStatus @default(PENDING)
+  coverLetter String?           @db.Text
+  proposedFee Decimal?          @db.Decimal(10, 2)
+  isProBono   Boolean           @default(true)
+  appliedAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  respondedAt DateTime?
+
+  case        Case          @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  lawyer      User          @relation(fields: [lawyerId], references: [id], onDelete: Cascade)
+  profile     LawyerProfile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+
+  @@unique([caseId, lawyerId])
+  @@index([lawyerId])
+  @@index([status])
+  @@map("case_applications")
+}
+
+model SavedCase {
+  userId  String
+  caseId  String
+  savedAt DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  case    Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@id([userId, caseId])
+  @@map("saved_cases")
+}
+
+// =============================================================================
+// NETWORKING — CONNECTIONS
+// =============================================================================
+
+model Connection {
+  id          String           @id @default(cuid())
+  requesterId String
+  receiverId  String
+  status      ConnectionStatus @default(PENDING)
+  message     String?          // optional note with the request
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  respondedAt DateTime?
+
+  requester   User             @relation("ConnectionRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  receiver    User             @relation("ConnectionReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, receiverId])
+  @@index([status])
+  @@index([requesterId])
+  @@index([receiverId])
+  @@map("connections")
+}
+
+// =============================================================================
+// MESSAGING — CHATROOM
+// Powers the chatroom page.
+// A Conversation can be linked to a Case for context.
+// =============================================================================
+
+model Conversation {
+  id        String   @id @default(cuid())
+  caseId    String?  // optional — conversation tied to a case
+  title     String?  // auto-generated from case title or set manually
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  case         Case?                    @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  participants ConversationParticipant[]
+  messages     Message[]
+
+  @@index([caseId])
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  conversationId String
+  userId         String
+  joinedAt       DateTime  @default(now())
+  lastReadAt     DateTime? // used to compute unread message count
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([conversationId, userId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id             String      @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String?     @db.Text
+  messageType    MessageType @default(TEXT)
+
+  // for file/image messages — the actual file lives in S3
+  fileKey        String?
+  fileName       String?
+  fileSize       Int?
+  mimeType       String?
+
+  isRead         Boolean     @default(false)
+  readAt         DateTime?
+  createdAt      DateTime    @default(now())
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([createdAt])
+  @@map("messages")
+}
+
+// =============================================================================
+// BLOG / INSIGHTS
+// =============================================================================
+
+model BlogPost {
+  id              String     @id @default(cuid())
+  authorId        String
+  title           String
+  slug            String     @unique
+  subtitle        String?
+  content         String     @db.Text
+  coverImageUrl   String?
+  category        String
+  status          PostStatus @default(DRAFT)
+  readTimeMinutes Int        @default(5)
+
+  // denormalised counters — faster reads, updated via background job or trigger
+  viewCount       Int        @default(0)
+  likeCount       Int        @default(0)
+  commentCount    Int        @default(0)
+
+  // featuring
+  isFeatured      Boolean    @default(false)
+  featuredAt      DateTime?
+
+  publishedAt     DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  author          User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  tags            BlogPostTag[]
+  comments        Comment[]
+  likes           PostLike[]
+  saves           SavedPost[]
+  reports         AdminReport[]  @relation("ReportedPost")
+
+  @@index([status])
+  @@index([category])
+  @@index([authorId])
+  @@index([publishedAt])
+  @@index([isFeatured])
+  @@map("blog_posts")
+}
+
+model BlogPostTag {
+  postId String
+  tag    String
+
+  post   BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tag])
+  @@index([tag])
+  @@map("blog_post_tags")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  authorId  String
+  content   String   @db.Text
+  parentId  String?  // null = top-level, set = reply to another comment
+  likeCount Int      @default(0) // denormalised
+  isEdited  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post    BlogPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author  User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent  Comment?      @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
+  replies Comment[]     @relation("CommentReplies")
+  likes   CommentLike[]
+
+  @@index([postId])
+  @@index([authorId])
+  @@index([parentId])
+  @@map("comments")
+}
+
+// Tracks which user liked which post — enables toggle state
+model PostLike {
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+  @@map("post_likes")
+}
+
+// Tracks which user saved which post — enables toggle state
+model SavedPost {
+  userId  String
+  postId  String
+  savedAt DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post    BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+  @@map("saved_posts")
+}
+
+// Tracks which user liked which comment
+model CommentLike {
+  userId    String
+  commentId String
+  createdAt DateTime @default(now())
+
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@id([userId, commentId])
+  @@map("comment_likes")
+}
+
+// =============================================================================
+// AI ASSISTANT — RAG PIPELINE
+// ChatSession is the conversation wrapper.
+// Document is the uploaded legal file.
+// ChatSessionDocument links a session to one or more documents.
+// DocumentChunk stores the split text chunks post-processing.
+// ChatMessage stores every turn of the conversation.
+// =============================================================================
+
+model Document {
+  id               String   @id @default(cuid())
+  ownerId          String
+  title            String?
+  fileKey          String   // S3 key
+  fileName         String
+  mimeType         String?
+  sizeBytes        Int?
+  pageCount        Int?
+  language         String   @default("en")
+  processingStatus String   @default("pending") // pending | processing | ready | failed
+  chunkCount       Int      @default(0)
+  embeddingModel   String?  // e.g. "text-embedding-3-small"
+  vectorNamespace  String?  // Pinecone namespace
+  processingError  String?
+  uploadedAt       DateTime @default(now())
+  processedAt      DateTime?
+  expiresAt        DateTime? // auto-delete after X days for guest uploads
+
+  owner            User                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  chunks           DocumentChunk[]
+  sessions         ChatSessionDocument[]
+
+  @@index([ownerId])
+  @@index([processingStatus])
+  @@map("documents")
+}
+
+// Stores the chunked text segments used for vector search
+model DocumentChunk {
+  id          String   @id @default(cuid())
+  documentId  String
+  chunkIndex  Int
+  content     String   @db.Text
+  tokenCount  Int
+  pageNumber  Int?
+  startChar   Int?
+  endChar     Int?
+  vectorId    String?  // ID in Pinecone / vector store
+
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, chunkIndex])
+  @@index([documentId])
+  @@map("document_chunks")
+}
+
+model ChatSession {
+  id            String   @id @default(cuid())
+  userId        String
+  title         String   @default("New Conversation")
+  language      String   @default("en")
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  lastMessageAt DateTime?
+
+  user          User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages      ChatMessage[]
+  documents     ChatSessionDocument[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("chat_sessions")
+}
+
+// Junction — a session can reference multiple documents
+model ChatSessionDocument {
+  sessionId  String
+  documentId String
+  addedAt    DateTime @default(now())
+
+  session    ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  document   Document    @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@id([sessionId, documentId])
+  @@map("chat_session_documents")
+}
+
+model ChatMessage {
+  id              String      @id @default(cuid())
+  sessionId       String
+  role            MessageRole // USER | ASSISTANT | SYSTEM
+  content         String      @db.Text
+  tokensUsed      Int?
+  modelUsed       String?     // e.g. "claude-opus-4-6"
+  retrievedChunks Json?       // array of chunk IDs used for this response
+  confidenceScore Decimal?    @db.Decimal(5, 4)
+  createdAt       DateTime    @default(now())
+
+  session         ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([createdAt])
+  @@map("chat_messages")
+}
+
+// =============================================================================
+// NOTIFICATIONS
+// =============================================================================
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String
+  linkUrl   String?
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  metadata  Json?            // any extra context, e.g. { caseId: "..." }
+  createdAt DateTime         @default(now())
+
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+// =============================================================================
+// USER PREFERENCES
+// Persists all toggles from the profile settings page.
+// =============================================================================
+
+model UserPreference {
+  id                String  @id @default(cuid())
+  userId            String  @unique
+
+  // appearance
+  theme             String  @default("dark")       // "dark" | "light" | "auto"
+  language          String  @default("en")
+  timezone          String  @default("Asia/Kolkata")
+  aiLanguage        String  @default("en")
+  compactMode       Boolean @default(false)
+  animationsEnabled Boolean @default(true)
+
+  // privacy
+  isPublicProfile   Boolean @default(true)
+  showContactInfo   Boolean @default(true)
+  showOnlineStatus  Boolean @default(false)
+  isSearchable      Boolean @default(true)
+
+  // notification channels
+  emailImmediate    Boolean @default(true)
+  emailDigest       Boolean @default(true)
+  smsUrgentOnly     Boolean @default(true)
+  smsOtp            Boolean @default(true)
+  inAppBadge        Boolean @default(true)
+  inAppSound        Boolean @default(false)
+
+  // notification types
+  notifCaseUpdates     Boolean @default(true)
+  notifApplications    Boolean @default(true)
+  notifHearings        Boolean @default(true)
+  notifDeadlines       Boolean @default(true)
+  notifMessages        Boolean @default(true)
+  notifConnections     Boolean @default(true)
+  notifKyc             Boolean @default(true)
+  notifSecurity        Boolean @default(true)
+  notifAnnouncements   Boolean @default(true)
+  notifMarketing       Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+// =============================================================================
+// ADMIN — REPORTS
+// Powers the admin reports page.
+// A report can target a user profile, a case, or a blog post.
+// =============================================================================
+
+model AdminReport {
+  id                String         @id @default(cuid())
+  reportedById      String
+  reportedUserId    String?        // set when a profile is reported
+  reportedCaseId    String?        // set when a case is reported
+  reportedPostId    String?        // set when a blog post is reported
+  type              ReportType
+  priority          ReportPriority @default(MEDIUM)
+  status            ReportStatus   @default(OPEN)
+  description       String         @db.Text
+  adminNotes        String?        @db.Text
+  resolvedBy        String?
+  resolvedAt        DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  reportedBy        User           @relation("ReportedBy", fields: [reportedById], references: [id], onDelete: Cascade)
+  reportedUser      User?          @relation("ReportedUser", fields: [reportedUserId], references: [id], onDelete: SetNull)
+  reportedCase      Case?          @relation("ReportedCase", fields: [reportedCaseId], references: [id], onDelete: SetNull)
+  reportedPost      BlogPost?      @relation("ReportedPost", fields: [reportedPostId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([type])
+  @@index([priority])
+  @@index([createdAt])
+  @@map("admin_reports")
+}
+
+// =============================================================================
+// ADMIN — AUDIT LOGS
+// Every sensitive admin or system action is written here.
+// Powers the admin audit log page with filtering by date, user, action type.
+// =============================================================================
+
+model AuditLog {
+  id           String          @id @default(cuid())
+  performerId  String?         // null for system-generated events
+  targetUserId String?         // the user the action was performed on
+  action       AuditActionType
+  entityType   String?         // "Case" | "BlogPost" | "KycApplication" etc.
+  entityId     String?         // the ID of the affected record
+  metadata     Json?           // any extra context
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime        @default(now())
+
+  performer    User?           @relation("AuditPerformer", fields: [performerId], references: [id], onDelete: SetNull)
+  targetUser   User?           @relation("AuditTarget", fields: [targetUserId], references: [id], onDelete: SetNull)
+
+  @@index([performerId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}
+
+// =============================================================================
+// PLATFORM SETTINGS
+// Key-value store for admin-configurable platform settings.
+// Powers the admin settings page toggles and text inputs.
+// =============================================================================
+
+model PlatformSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String   @db.Text
+  description String?
+  updatedBy   String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("platform_settings")
+}
+
+model FeatureFlag {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  isEnabled   Boolean  @default(true)
+  description String?
+  updatedBy   String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("feature_flags")
 }

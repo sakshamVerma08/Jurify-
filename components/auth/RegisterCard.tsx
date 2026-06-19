@@ -8,6 +8,7 @@ import { useState } from 'react'
 import { JurifyLogoIcon } from '@/components/icons/JurifyLogoIcon'
 import { RegisterDetailsForm } from '@/components/auth/RegisterDetailsForm'
 import { RegisterProgress } from '@/components/auth/RegisterProgress'
+import { OTPPanel } from '@/components/auth/OTPPanel'
 import { RegisterSuccessPanel } from '@/components/auth/RegisterSuccessPanel'
 import { RoleSelectionStep } from '@/components/auth/RoleSelectionStep'
 import type { RegisterStep, UserRole } from '@/types'
@@ -15,6 +16,7 @@ import type { RegisterStep, UserRole } from '@/types'
 export function RegisterCard() {
   const [step, setStep] = useState<RegisterStep>(1)
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null)
+  const [email, setEmail] = useState('')
   const [slideDirection, setSlideDirection] = useState<'right' | 'left'>('right')
 
   function goToStep2() {
@@ -28,8 +30,15 @@ export function RegisterCard() {
     setStep(1)
   }
 
-  function goToSuccess() {
+  function goToStep3(userEmail: string) {
+    setEmail(userEmail)
+    setSlideDirection('right')
     setStep(3)
+  }
+
+  function goToSuccess() {
+    setSlideDirection('right')
+    setStep(4)
   }
 
   const animationClass =
@@ -59,11 +68,23 @@ export function RegisterCard() {
           <RegisterDetailsForm
             role={selectedRole}
             onBack={goToStep1}
-            onSuccess={goToSuccess}
+            onSuccess={goToStep3}
             animationClass={animationClass}
           />
         )}
-        {step === 3 && selectedRole && <RegisterSuccessPanel role={selectedRole} />}
+        {step === 3 && selectedRole && (
+          <div className={animationClass}>
+            <OTPPanel
+              email={email}
+              onBack={() => {
+                setSlideDirection('left')
+                setStep(2)
+              }}
+              onSuccess={goToSuccess}
+            />
+          </div>
+        )}
+        {step === 4 && selectedRole && <RegisterSuccessPanel role={selectedRole} />}
       </div>
 
       <p className="mt-5 text-center text-[11px] leading-relaxed text-[rgba(245,240,234,0.2)]">
