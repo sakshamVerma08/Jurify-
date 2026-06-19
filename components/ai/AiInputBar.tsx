@@ -19,6 +19,7 @@ export function AiInputBar() {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [value, setValue] = useState('')
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Handles file upload and updates status based on backend response
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -34,18 +35,26 @@ export function AiInputBar() {
       if (resp.ok) {
         showToast(`"${file.name}" uploaded & indexed`, 'ok');
         setUploadStatus('success');
+        setErrorMessage('');
       } else {
-        showToast(`Upload failed: ${resp.statusText}`, 'err');
+        const msg = `Upload failed: ${resp.status} ${resp.statusText}`;
+        showToast(msg, 'error');
+        setErrorMessage(msg);
         setUploadStatus('error');
       }
     } catch (err) {
-      showToast(`Upload error: ${err}`, 'err');
+      const msg = err instanceof Error ? err.message : String(err);
+      showToast(`Upload error: ${msg}`, 'error');
+      setErrorMessage(msg);
       setUploadStatus('error');
     }
     // Reset input for next upload
     e.target.value = '';
     // Reset status after brief display
-    setTimeout(() => setUploadStatus('idle'), 3000);
+    setTimeout(() => {
+      setUploadStatus('idle');
+      setErrorMessage('');
+    }, 3000);
   };
 
   const placeholder = hasDocument
@@ -135,7 +144,7 @@ export function AiInputBar() {
             <span className="ml-2 text-[var(--td)]">✅ Uploaded</span>
           )}
           {uploadStatus === 'error' && (
-            <span className="ml-2 text-[var(--td)]">❌ Failed</span>
+            <span className="ml-2 text-red-500">❌ {errorMessage || 'Failed'}</span>
           )}
         </div>
         <button
