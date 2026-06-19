@@ -106,7 +106,7 @@ export async function signupAction(raw: unknown) {
             console.error("[OTP_SEND_ERROR] Profile created but OTP failed to send:", otpError);
         }
 
-    } catch (dbError) {
+    } catch (dbError: any) {
         console.error("[PROFILE_CREATION_ERROR] Transaction failed, initiating rollback:", dbError);
 
         // 5. Compensating Transaction (Rollback)
@@ -118,6 +118,15 @@ export async function signupAction(raw: unknown) {
         } catch (rollbackError) {
             // Critical failure: Database is now out of sync (User exists without Profile)
             console.error(`[CRITICAL_ROLLBACK_FAILURE] Failed to delete orphaned user ${userId}. Manual cleanup required!`, rollbackError);
+        }
+
+        if (dbError?.code === 'P2002') {
+            if (dbError.meta?.target?.includes('email')) {
+                return { error: { root: ["This email address is already registered."] } };
+            }
+            if (dbError.meta?.target?.includes('phone')) {
+                return { error: { root: ["This phone number is already registered."] } };
+            }
         }
 
         return { error: { root: ["Account setup failed due to a database error. Please try again."] } };

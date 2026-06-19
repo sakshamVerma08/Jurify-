@@ -8,6 +8,8 @@ import { Toast } from '@/components/ui/Toast'
 
 import { getLawyersAction } from '@/actions/lawyers/browse'
 
+export const dynamic = 'force-dynamic'
+
 export default async function LawyersPage() {
   const result = await getLawyersAction()
   const initialLawyers = result.success && result.data ? result.data : []

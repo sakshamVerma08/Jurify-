@@ -418,6 +418,7 @@ model KycApplication {
   id              String             @id @default(cuid())
   lawyerId        String             @unique
   referenceNumber String             @unique  // e.g. JRF-2026-DL-48291
+  idempotencyKey  String?            @unique
   status          VerificationStatus @default(PENDING)
   currentStep     KycStep            @default(FORM_SUBMITTED)
   rejectionReason String?            @db.Text
@@ -495,6 +496,7 @@ model LawyerReview {
 model Case {
   id                   String      @id @default(cuid())
   clientId             String
+  idempotencyKey       String?     @unique
   title                String
   description          String      @db.Text
   category             String

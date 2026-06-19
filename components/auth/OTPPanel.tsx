@@ -111,7 +111,7 @@ export function OTPPanel({ email, onBack, onSuccess }: Props) {
         })
         setTimeout(() => {
           router.refresh()
-          router.push('/dashboard')
+          router.push('/cases')
         }, 1500)
       }
     } else {

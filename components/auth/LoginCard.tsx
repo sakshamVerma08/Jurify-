@@ -24,7 +24,7 @@ export function LoginCard() {
             onLoginSuccess={(userEmail, isVerified) => {
               if (isVerified) {
                 router.refresh()
-                router.push('/dashboard')
+                router.push('/cases')
               } else {
                 setEmail(userEmail)
                 setPanel('otp')

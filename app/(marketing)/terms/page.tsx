@@ -97,7 +97,7 @@ export default function TermsPage() {
               <div className="mb-2 text-[10px] font-medium uppercase tracking-[1.5px] text-[var(--og)]">
                 Section 01
               </div>
-              <h2 className="mb-2 font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
+              <h2 className="mb-2 text-left font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
                 Definitions &amp; <em className="font-serif italic text-[var(--o2)]">Interpretation</em>
               </h2>
               <p className="border-l-2 border-[rgba(212,133,58,0.3)] pl-3.5 text-md font-light leading-relaxed text-[var(--tm)]">
@@ -155,7 +155,7 @@ export default function TermsPage() {
               <div className="mb-2 text-[10px] font-medium uppercase tracking-[1.5px] text-[var(--og)]">
                 Section 02
               </div>
-              <h2 className="mb-2 font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
+              <h2 className="mb-2 text-left font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
                 Acceptance of <em className="font-serif italic text-[var(--o2)]">Terms</em>
               </h2>
               <p className="border-l-2 border-[rgba(212,133,58,0.3)] pl-3.5 text-md font-light leading-relaxed text-[var(--tm)]">
@@ -213,7 +213,7 @@ export default function TermsPage() {
               <div className="mb-2 text-[10px] font-medium uppercase tracking-[1.5px] text-[var(--og)]">
                 Section 03
               </div>
-              <h2 className="mb-2 font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
+              <h2 className="mb-2 text-left font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
                 User Roles &amp; <em className="font-serif italic text-[var(--o2)]">Eligibility</em>
               </h2>
               <p className="border-l-2 border-[rgba(212,133,58,0.3)] pl-3.5 text-md font-light leading-relaxed text-[var(--tm)]">
@@ -301,7 +301,7 @@ export default function TermsPage() {
               <div className="mb-2 text-[10px] font-medium uppercase tracking-[1.5px] text-[var(--og)]">
                 Section 04
               </div>
-              <h2 className="mb-2 font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
+              <h2 className="mb-2 text-left font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
                 AI Assistant <em className="font-serif italic text-[var(--o2)]">Usage</em>
               </h2>
               <p className="border-l-2 border-[rgba(212,133,58,0.3)] pl-3.5 text-md font-light leading-relaxed text-[var(--tm)]">
@@ -366,7 +366,7 @@ export default function TermsPage() {
               <div className="mb-2 text-[10px] font-medium uppercase tracking-[1.5px] text-[var(--og)]">
                 Section 05
               </div>
-              <h2 className="mb-2 font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
+              <h2 className="mb-2 text-left font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
                 Data Privacy &amp; <em className="font-serif italic text-[var(--o2)]">Protection</em>
               </h2>
               <p className="border-l-2 border-[rgba(212,133,58,0.3)] pl-3.5 text-md font-light leading-relaxed text-[var(--tm)]">
@@ -476,7 +476,7 @@ export default function TermsPage() {
               <div className="mb-2 text-[10px] font-medium uppercase tracking-[1.5px] text-[var(--og)]">
                 Section 06
               </div>
-              <h2 className="mb-2 font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
+              <h2 className="mb-2 text-left font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
                 Pro Bono <em className="font-serif italic text-[var(--o2)]">Guidelines</em>
               </h2>
               <p className="border-l-2 border-[rgba(212,133,58,0.3)] pl-3.5 text-md font-light leading-relaxed text-[var(--tm)]">
@@ -553,7 +553,7 @@ export default function TermsPage() {
               <div className="mb-2 text-[10px] font-medium uppercase tracking-[1.5px] text-[var(--og)]">
                 Section 07
               </div>
-              <h2 className="mb-2 font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
+              <h2 className="mb-2 text-left font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
                 Dispute <em className="font-serif italic text-[var(--o2)]">Resolution</em>
               </h2>
               <p className="border-l-2 border-[rgba(212,133,58,0.3)] pl-3.5 text-md font-light leading-relaxed text-[var(--tm)]">
@@ -601,7 +601,7 @@ export default function TermsPage() {
               <div className="mb-2 text-[10px] font-medium uppercase tracking-[1.5px] text-[var(--og)]">
                 Section 08
               </div>
-              <h2 className="mb-2 font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
+              <h2 className="mb-2 text-left font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
                 Intellectual <em className="font-serif italic text-[var(--o2)]">Property</em>
               </h2>
               <p className="border-l-2 border-[rgba(212,133,58,0.3)] pl-3.5 text-md font-light leading-relaxed text-[var(--tm)]">
@@ -632,7 +632,7 @@ export default function TermsPage() {
               <div className="mb-2 text-[10px] font-medium uppercase tracking-[1.5px] text-[var(--og)]">
                 Section 09
               </div>
-              <h2 className="mb-2 font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
+              <h2 className="mb-2 text-left font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
                 Limitation of <em className="font-serif italic text-[var(--o2)]">Liability</em>
               </h2>
               <p className="border-l-2 border-[rgba(212,133,58,0.3)] pl-3.5 text-md font-light leading-relaxed text-[var(--tm)]">
@@ -682,7 +682,7 @@ export default function TermsPage() {
               <div className="mb-2 text-[10px] font-medium uppercase tracking-[1.5px] text-[var(--og)]">
                 Section 10
               </div>
-              <h2 className="mb-2 font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
+              <h2 className="mb-2 text-left font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
                 <em className="font-serif italic text-[var(--o2)]">Termination</em>
               </h2>
               <p className="border-l-2 border-[rgba(212,133,58,0.3)] pl-3.5 text-md font-light leading-relaxed text-[var(--tm)]">
@@ -735,7 +735,7 @@ export default function TermsPage() {
               <div className="mb-2 text-[10px] font-medium uppercase tracking-[1.5px] text-[var(--og)]">
                 Section 11
               </div>
-              <h2 className="mb-2 font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
+              <h2 className="mb-2 text-left font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
                 Governing <em className="font-serif italic text-[var(--o2)]">Law</em>
               </h2>
             </div>
@@ -757,7 +757,7 @@ export default function TermsPage() {
               <div className="mb-2 text-[10px] font-medium uppercase tracking-[1.5px] text-[var(--og)]">
                 Section 12
               </div>
-              <h2 className="mb-2 font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
+              <h2 className="mb-2 text-left font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
                 <em className="font-serif italic text-[var(--o2)]">Amendments</em>
               </h2>
             </div>
@@ -788,7 +788,7 @@ export default function TermsPage() {
               <div className="mb-2 text-[10px] font-medium uppercase tracking-[1.5px] text-[var(--og)]">
                 Section 13
               </div>
-              <h2 className="mb-2 font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
+              <h2 className="mb-2 text-left font-serif text-3.5xl font-normal leading-tight tracking-tight text-[var(--t)]">
                 Contact &amp; <em className="font-serif italic text-[var(--o2)]">Grievances</em>
               </h2>
               <p className="border-l-2 border-[rgba(212,133,58,0.3)] pl-3.5 text-md font-light leading-relaxed text-[var(--tm)]">

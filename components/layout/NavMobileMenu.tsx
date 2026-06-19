@@ -36,10 +36,10 @@ export function NavMobileMenu() {
         </svg>
       </summary>
 
-      <div className="nav-blur fixed inset-x-0 top-[68px] z-[199] border-b border-white/[0.07]">
-        <div className="flex flex-col gap-4 px-6 py-6">
+      <div className="fixed inset-x-0 bottom-0 top-[68px] z-[199] border-t border-white/[0.07] bg-[#080808]/98 backdrop-blur-3xl">
+        <div className="flex h-full flex-col gap-4 overflow-y-auto px-6 py-6 pb-24">
           <NavLinks className="flex-col items-start gap-1" />
-          <NavAuthButtons className="w-full flex-col [&_a]:w-full [&_a]:justify-center" />
+          <NavAuthButtons className="mt-2 w-full flex-col [&_a]:w-full [&_a]:justify-center" />
         </div>
       </div>
     </details>

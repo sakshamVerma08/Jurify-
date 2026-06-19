@@ -4,7 +4,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useForm, type UseFormRegisterReturn } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FieldError } from '@/components/auth/FieldError'
@@ -17,6 +18,8 @@ import {
 import { z } from 'zod'
 import { postCaseSchema, type PostCaseFormData } from '@/lib/validations/case'
 import { postCaseAction } from '@/actions/cases/post'
+import { getMyCasesAction } from '@/actions/cases/client'
+import { getAllCasesAction } from '@/actions/cases/browse'
 import { cn } from '@/lib/utils'
 import { useCasesStore } from '@/stores/casesStore'
 import { useUiStore } from '@/stores/uiStore'
@@ -31,9 +34,18 @@ function enableField(event: React.FocusEvent<HTMLInputElement | HTMLSelectElemen
 export function PostCaseModal() {
   const open = useCasesStore((s) => s.postModalOpen)
   const closePostModal = useCasesStore((s) => s.closePostModal)
-  const addPostedCase = useCasesStore((s) => s.addPostedCase)
+  const setMyPostedCases = useCasesStore((s) => s.setMyPostedCases)
+  const setBrowseCases = useCasesStore((s) => s.setBrowseCases)
   const showToast = useUiStore((s) => s.showToast)
+  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const idempotencyKeyRef = useRef<string>('')
+
+  useEffect(() => {
+    if (open) {
+      idempotencyKeyRef.current = crypto.randomUUID()
+    }
+  }, [open])
 
   const {
     register,
@@ -76,12 +88,28 @@ export function PostCaseModal() {
     setIsSubmitting(true)
     
     // Call our securely validated server action
-    const result = await postCaseAction(data)
+    const result = await postCaseAction({
+      ...data,
+      idempotencyKey: idempotencyKeyRef.current
+    })
     
     setIsSubmitting(false)
     
     if (result.success) {
       showToast('Case posted successfully!', 'ok')
+      
+      // Refresh the Zustand store explicitly so the MyCases tab updates without a full page reload
+      const freshData = await getMyCasesAction()
+      if (freshData.success && freshData.cases) {
+        setMyPostedCases(freshData.cases)
+      }
+      
+      const freshBrowseData = await getAllCasesAction()
+      if (freshBrowseData.success && freshBrowseData.cases) {
+        setBrowseCases(freshBrowseData.cases as any)
+      }
+      
+      router.refresh()
       handleClose()
     } else {
       showToast(result.error || 'Failed to post case', 'err')

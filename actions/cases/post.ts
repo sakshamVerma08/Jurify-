@@ -26,8 +26,20 @@ function mapStage(stage: string): CaseStage {
   }
 }
 
-export async function postCaseAction(data: PostCaseFormData) {
+export async function postCaseAction(data: PostCaseFormData & { idempotencyKey?: string }) {
   try {
+    const { idempotencyKey } = data;
+
+    // Idempotency check
+    if (idempotencyKey) {
+      const existingCase = await prisma.case.findUnique({
+        where: { idempotencyKey }
+      });
+      if (existingCase) {
+        return { success: true, caseId: existingCase.id };
+      }
+    }
+
     // 1. Authenticate the user securely via session
     const session = await requireAuth()
     if (!session) {
@@ -53,6 +65,7 @@ export async function postCaseAction(data: PostCaseFormData) {
     const newCase = await prisma.case.create({
       data: {
         clientId: session.user.id,
+        idempotencyKey: idempotencyKey || null,
         title: validData.title,
         description: validData.description,
         category: validData.category,

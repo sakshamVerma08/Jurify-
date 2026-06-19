@@ -4,6 +4,7 @@ import { emailOTP } from "better-auth/plugins";
 import { prisma } from "@/lib/prisma/prisma";
 import { getTransporter } from "@/lib/nodemailer/mailer";
 import { getOTPTemplate } from "@/lib/nodemailer/templates/otp";
+import { nextCookies } from "better-auth/next-js";
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
@@ -37,14 +38,16 @@ export const auth = betterAuth({
             },
             expiresIn: 300,
         }),
+        nextCookies(),
     ],
     session: {
+        expiresIn: 12 * 60 * 60, // 12 hours
         cookieCache: {
             enabled: false,
             maxAge: 60 * 5, // 5 min client-side cache
         },
     },
-    baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_BASE_URL,
+    baseURL: (process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_BASE_URL) + "/api/auth",
     trustedOrigins: [process.env.NEXT_PUBLIC_BASE_URL!],
     advanced: {
         useSecureCookies: false,

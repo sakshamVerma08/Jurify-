@@ -3,6 +3,7 @@
 
 'use client'
 
+import { useRef, useEffect } from 'react'
 import { KycStepHeader } from '@/components/kyc/KycStepHeader'
 import { KycStepNav } from '@/components/kyc/KycStepNav'
 import { KYC_APPLICATION_ID } from '@/lib/data/kyc'
@@ -22,6 +23,11 @@ export function KycStep4Review() {
   const isSubmitting = useKycStore((s) => s.isSubmitting)
   const setIsSubmitting = useKycStore((s) => s.setIsSubmitting)
   const showToast = useUiStore((s) => s.showToast)
+  const idempotencyKeyRef = useRef<string>('')
+
+  useEffect(() => {
+    idempotencyKeyRef.current = crypto.randomUUID()
+  }, [])
 
   async function handleSubmit() {
     setIsSubmitting(true)
@@ -30,7 +36,8 @@ export function KycStep4Review() {
       step1,
       step3,
       documents,
-      photo
+      photo,
+      idempotencyKey: idempotencyKeyRef.current
     })
 
     setIsSubmitting(false)

@@ -6,6 +6,8 @@ import { redirect } from 'next/navigation'
 import { requireAuth } from '@/lib/auth/auth-helper'
 import { prisma } from '@/lib/prisma/prisma'
 
+export const dynamic = 'force-dynamic'
+
 export default async function CasesPage() {
   const session = await requireAuth()
   if (!session) redirect('/login')

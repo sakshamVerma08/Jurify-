@@ -31,7 +31,17 @@ export async function submitKycApplication(data: any) {
     }
 
     // 2. Extract Data from Frontend Submission
-    const { step1, step3, documents, photo } = data
+    const { step1, step3, documents, photo, idempotencyKey } = data
+
+    // Idempotency Check
+    if (idempotencyKey) {
+      const existingApp = await db.kycApplication.findUnique({
+        where: { idempotencyKey }
+      })
+      if (existingApp) {
+        return { success: true, referenceNumber: existingApp.referenceNumber }
+      }
+    }
     
     // We need the lawyer's profile ID to associate the application
     const lawyerProfile = await db.lawyerProfile.findUnique({
@@ -87,6 +97,7 @@ export async function submitKycApplication(data: any) {
         data: {
           lawyerId: lawyerProfile.id,
           referenceNumber,
+          idempotencyKey: idempotencyKey || null,
           status: VerificationStatus.PENDING,
           currentStep: KycStep.FORM_SUBMITTED,
         }
@@ -159,6 +170,9 @@ export async function submitKycApplication(data: any) {
           }
         ]
       })
+    }, {
+      maxWait: 10000, // 10 seconds max wait for connection
+      timeout: 20000, // 20 seconds timeout for transaction
     })
 
     return { 
@@ -166,8 +180,16 @@ export async function submitKycApplication(data: any) {
       referenceNumber 
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('[KYC_SUBMIT_ERROR]', error)
+    
+    if (error?.code === 'P2002') {
+      if (error?.meta?.target?.includes('lawyerId')) {
+        return { success: false, error: 'You have already submitted a KYC application. Please check its status.' }
+      }
+      return { success: false, error: 'This Bar Council Enrollment Number is already registered.' }
+    }
+    
     return { success: false, error: 'Internal Server Error' }
   }
 }

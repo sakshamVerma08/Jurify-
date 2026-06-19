@@ -24,7 +24,7 @@ export function KycPageContent() {
     <>
       <div className="mx-auto grid min-h-screen max-w-[1440px] grid-cols-1 pt-[68px] lg:grid-cols-[300px_1fr]">
         <KycSidebar />
-        <main ref={mainRef} className="min-h-[calc(100vh-68px)] overflow-y-auto px-6 py-10 pb-20 md:px-10 lg:px-14 lg:py-12">
+        <main ref={mainRef} className="min-h-[calc(100vh-68px)] overflow-y-auto px-4 py-8 pb-20 sm:px-6 md:px-10 lg:px-14 lg:py-12">
           {currentStep === 1 && <KycStep1Form />}
           {currentStep === 2 && <KycStep2Documents />}
           {currentStep === 3 && <KycStep3Profile />}

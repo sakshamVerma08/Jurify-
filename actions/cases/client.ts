@@ -60,7 +60,7 @@ export async function getMyCasesAction() {
 
     const formattedCases = cases.map((c) => {
       const { stage, label } = mapStageToFrontend(c.stage)
-      
+
       // Calculate progress step based on stage
       let progressStep = 0
       if (c.stage === 'INVESTIGATION') progressStep = 1
@@ -129,6 +129,8 @@ export async function closeCaseAction(caseId: string) {
       return { success: false, error: 'Case not found or unauthorized' }
     }
 
+    //Instead of this we can soft delete the data as well by creating a new column isDeleted.
+    //This is how it's usually done in the real world production apps too.
     await prisma.case.delete({
       where: { id: caseId }
     })
@@ -196,7 +198,7 @@ export async function acceptLawyerAction(caseId: string, lawyerId: string) {
     const existingCase = await prisma.case.findUnique({
       where: { id: caseId }
     })
-    
+
     if (!existingCase || existingCase.clientId !== session.user.id) {
       return { success: false, error: 'Case not found or unauthorized' }
     }

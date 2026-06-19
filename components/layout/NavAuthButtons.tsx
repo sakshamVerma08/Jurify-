@@ -28,6 +28,11 @@ export function NavAuthButtons({ className }: Props) {
   
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -56,8 +61,8 @@ export function NavAuthButtons({ className }: Props) {
     }
   }
 
-  // Loading skeleton
-  if (isPending) {
+  // Loading skeleton during SSR and initial hydration
+  if (!mounted || isPending) {
     return (
       <div className={cn('flex items-center gap-2.5', className)}>
         <div className="h-[38px] w-[38px] animate-pulse rounded-full bg-white/[0.08]" />
