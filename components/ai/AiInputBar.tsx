@@ -38,13 +38,13 @@ export function AiInputBar() {
         setErrorMessage('');
       } else {
         const msg = `Upload failed: ${resp.status} ${resp.statusText}`;
-        showToast(msg, 'error');
+        showToast(msg, 'err');
         setErrorMessage(msg);
         setUploadStatus('error');
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      showToast(`Upload error: ${msg}`, 'error');
+      showToast(`Upload error: ${msg}`, 'err');
       setErrorMessage(msg);
       setUploadStatus('error');
     }
