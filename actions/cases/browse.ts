@@ -1,17 +1,17 @@
 'use server'
 
 import { prisma } from '@/lib/prisma/prisma'
-import { CaseStage } from '@prisma/client'
+
 import { formatDistanceToNow } from 'date-fns'
 
-function mapStageToFrontend(stage: CaseStage) {
+function mapStageToFrontend(stage: string) {
   switch (stage) {
-    case CaseStage.INITIAL_CONSULTATION: return { stage: 'initial', label: 'Initial Stage' }
-    case CaseStage.INVESTIGATION: return { stage: 'investigation', label: 'Investigation' }
-    case CaseStage.PRE_HEARING: return { stage: 'hearing', label: 'Pre-Hearing' }
-    case CaseStage.TRIAL: return { stage: 'trial', label: 'Trial' }
-    case CaseStage.VERDICT: return { stage: 'verdict', label: 'Verdict' }
-    case CaseStage.APPEAL: return { stage: 'appeal', label: 'Appeal' }
+    case 'INITIAL_CONSULTATION': return { stage: 'initial', label: 'Initial Stage' }
+    case 'INVESTIGATION': return { stage: 'investigation', label: 'Investigation' }
+    case 'PRE_HEARING': return { stage: 'hearing', label: 'Pre-Hearing' }
+    case 'TRIAL': return { stage: 'trial', label: 'Trial' }
+    case 'VERDICT': return { stage: 'verdict', label: 'Verdict' }
+    case 'APPEAL': return { stage: 'appeal', label: 'Appeal' }
     default: return { stage: 'initial', label: 'Initial Stage' }
   }
 }
