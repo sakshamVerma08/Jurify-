@@ -22,7 +22,7 @@ export function RegisterSuccessPanel({ role }: Props) {
     if (role === 'lawyer') {
       router.push('/kyc')
     } else {
-      router.push('/dashboard')
+      router.push('/cases')
     }
   }
 
@@ -66,7 +66,7 @@ export function RegisterSuccessPanel({ role }: Props) {
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M3 7h8M7.5 4l3 3-3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            Go to Dashboard
+            Post / View Cases
           </>
         )}
       </button>

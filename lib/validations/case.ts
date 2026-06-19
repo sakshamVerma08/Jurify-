@@ -21,9 +21,38 @@ export const postCaseSchema = z.object({
   contactEmail: z.string().min(1, 'Email is required').email('Enter a valid email address'),
   contactPhone: z.string().optional(),
   contactAddress: z.string().optional(),
+  isProBono: z.boolean(),
   acceptTerms: z.boolean().refine((value) => value === true, {
     message: 'Please accept the Terms & Conditions',
   }),
+}).superRefine((data, ctx) => {
+  if (data.incidentDate) {
+    const incident = new Date(data.incidentDate)
+    const today = new Date()
+    today.setHours(23, 59, 59, 999)
+    
+    if (incident > today) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Incident date cannot be in the future',
+        path: ['incidentDate'],
+      })
+    }
+    
+    if (data.deadline) {
+      const deadlineDate = new Date(data.deadline)
+      incident.setHours(0, 0, 0, 0)
+      deadlineDate.setHours(0, 0, 0, 0)
+
+      if (deadlineDate < incident) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Deadline cannot be before the incident date',
+          path: ['deadline'],
+        })
+      }
+    }
+  }
 })
 
 export type PostCaseFormData = z.infer<typeof postCaseSchema>

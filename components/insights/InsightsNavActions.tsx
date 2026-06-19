@@ -2,10 +2,17 @@
 
 import { useRouter } from 'next/navigation'
 import { useUiStore } from '@/stores/uiStore'
+import { useSession } from '@/lib/auth/auth-client'
 
 export function InsightsNavActions() {
   const router = useRouter()
   const showToast = useUiStore((s) => s.showToast)
+  const { data: session } = useSession()
+
+  // Only render these actions if the user is a lawyer
+  if (!session || (session.user as any).role !== 'LAWYER') {
+    return null
+  }
 
   return (
     <>

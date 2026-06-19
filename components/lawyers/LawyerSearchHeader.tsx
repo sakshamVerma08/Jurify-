@@ -3,12 +3,7 @@
 
 'use client'
 
-import { cn } from '@/lib/utils'
-import { useLawyerSearchStore } from '@/stores/lawyerSearchStore'
-
 export function LawyerSearchHeader() {
-  const viewRole = useLawyerSearchStore((s) => s.viewRole)
-  const setViewRole = useLawyerSearchStore((s) => s.setViewRole)
 
   return (
     <header className="flex flex-wrap items-end justify-between gap-5 border-b border-white/[0.06] bg-gradient-to-b from-o/[0.04] to-transparent px-8 py-12 pb-9 max-lg:px-6 max-md:px-4">
@@ -30,28 +25,7 @@ export function LawyerSearchHeader() {
         </p>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2.5 rounded-[10px] border border-white/[0.08] bg-white/[0.04] p-1">
-        <button
-          type="button"
-          onClick={() => setViewRole('client')}
-          className={cn(
-            'cursor-pointer rounded-[7px] border border-transparent px-[18px] py-[7px] font-sans text-[12.5px] font-medium text-[var(--tm)] transition-all duration-200',
-            viewRole === 'client' && 'border-og/30 bg-og/[0.18] text-o2'
-          )}
-        >
-          Client
-        </button>
-        <button
-          type="button"
-          onClick={() => setViewRole('lawyer')}
-          className={cn(
-            'cursor-pointer rounded-[7px] border border-transparent px-[18px] py-[7px] font-sans text-[12.5px] font-medium text-[var(--tm)] transition-all duration-200',
-            viewRole === 'lawyer' && 'border-og/30 bg-og/[0.18] text-o2'
-          )}
-        >
-          Lawyer
-        </button>
-      </div>
+
     </header>
   )
 }

@@ -5,7 +5,9 @@
 
 import { useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
-import type { KycDocumentId } from '@/types'
+import type { KycDocumentId, KycUploadedFile } from '@/types'
+import { uploadToCloudinary } from '@/lib/cloudinary-upload'
+import { useUiStore } from '@/stores/uiStore'
 
 interface KycDocumentUploadProps {
   id: KycDocumentId
@@ -16,7 +18,7 @@ interface KycDocumentUploadProps {
   file?: { name: string; sizeLabel: string } | null
   required?: boolean
   error?: string
-  onUpload: (file: File) => void
+  onUpload: (fileInfo: KycUploadedFile) => void
   onRemove: () => void
 }
 
@@ -34,11 +36,27 @@ export function KycDocumentUpload({
 }: KycDocumentUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragOver, setDragOver] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+  const showToast = useUiStore((s) => s.showToast)
   const hasFile = !!file
 
-  function handleFile(f: File) {
-    if (f.size > maxMb * 1024 * 1024) return
-    onUpload(f)
+  async function handleFile(f: File) {
+    if (f.size > maxMb * 1024 * 1024) {
+      showToast(`File size must be under ${maxMb}MB`, 'err')
+      return
+    }
+
+    try {
+      setIsUploading(true)
+      const fileInfo = await uploadToCloudinary(f)
+      onUpload(fileInfo)
+      showToast(`${label} uploaded successfully`, 'ok')
+    } catch (err) {
+      console.error(err)
+      showToast(`Failed to upload ${label}`, 'err')
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   return (
@@ -46,26 +64,29 @@ export function KycDocumentUpload({
       <div
         role="button"
         tabIndex={0}
-        onClick={() => inputRef.current?.click()}
+        onClick={() => !isUploading && inputRef.current?.click()}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') inputRef.current?.click()
+          if (!isUploading && (e.key === 'Enter' || e.key === ' ')) inputRef.current?.click()
         }}
         onDragOver={(e) => {
           e.preventDefault()
-          setDragOver(true)
+          if (!isUploading) setDragOver(true)
         }}
         onDragLeave={() => setDragOver(false)}
         onDrop={(e) => {
           e.preventDefault()
           setDragOver(false)
-          const f = e.dataTransfer.files[0]
-          if (f) handleFile(f)
+          if (!isUploading) {
+            const f = e.dataTransfer.files[0]
+            if (f) handleFile(f)
+          }
         }}
         className={cn(
           'kyc-upload-zone cursor-pointer overflow-hidden rounded-[14px] border-[1.5px] border-dashed border-og/30 bg-og/[0.03] px-4 py-7 text-center transition-all duration-200 hover:border-og/60 hover:bg-og/[0.07]',
           dragOver && 'kyc-upload-drag',
           hasFile && 'border-success/40 bg-success/[0.04]',
-          error && !hasFile && 'border-danger/40'
+          error && !hasFile && 'border-danger/40',
+          isUploading && 'opacity-60 cursor-not-allowed border-og/40 bg-og/5'
         )}
       >
         <div
@@ -74,7 +95,9 @@ export function KycDocumentUpload({
             hasFile && 'border-success/30 bg-success/10'
           )}
         >
-          {hasFile ? (
+          {isUploading ? (
+            <div className="w-5 h-5 rounded-full border-2 border-og/30 border-t-og animate-spin" />
+          ) : hasFile ? (
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
               <path d="M4 9l4 4 6-6" stroke="#4ade80" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -83,14 +106,18 @@ export function KycDocumentUpload({
           )}
         </div>
         <p className="mb-1 text-[13px] font-medium text-[var(--t)]">
-          {label}
-          {required && <span className="text-danger"> *</span>}
+          {isUploading ? 'Uploading...' : label}
+          {required && !isUploading && <span className="text-danger"> *</span>}
         </p>
-        <p className="whitespace-pre-line text-[11px] leading-snug text-[var(--td)]">{sub}</p>
-        <p className="mt-1.5 text-[10px] text-[rgba(245,240,234,0.25)]">{types}</p>
+        {!isUploading && (
+          <>
+            <p className="whitespace-pre-line text-[11px] leading-snug text-[var(--td)]">{sub}</p>
+            <p className="mt-1.5 text-[10px] text-[rgba(245,240,234,0.25)]">{types}</p>
+          </>
+        )}
       </div>
 
-      {hasFile && (
+      {hasFile && !isUploading && (
         <div className="mt-2.5 flex items-center gap-2.5 rounded-lg border border-white/[0.07] bg-white/[0.04] px-3 py-2.5 text-left">
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] border border-success/25 bg-success/10">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -116,7 +143,7 @@ export function KycDocumentUpload({
         </div>
       )}
 
-      {error && !hasFile && (
+      {error && !hasFile && !isUploading && (
         <p className="mt-1.5 text-[11px] text-danger">{error}</p>
       )}
 

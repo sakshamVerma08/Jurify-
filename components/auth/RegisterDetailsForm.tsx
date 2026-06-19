@@ -10,18 +10,20 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { FieldError } from '@/components/auth/FieldError'
 import { BAR_COUNCIL_STATES, PHONE_COUNTRY_CODES } from '@/lib/data/register'
 import {
-  createRegisterSchema,
+  registerSchema,
   getPasswordStrength,
   type RegisterFormData,
 } from '@/lib/validations/auth'
 import type { UserRole } from '@/types'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/stores/uiStore'
+import { signupAction } from '@/actions/auth/signup'
+import { authClient } from '@/lib/auth/auth-client'
 
 interface Props {
   role: UserRole
   onBack: () => void
-  onSuccess: () => void
+  onSuccess: (email: string) => void
   animationClass?: string
 }
 
@@ -38,7 +40,7 @@ export function RegisterDetailsForm({ role, onBack, onSuccess, animationClass }:
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const schema = useMemo(() => createRegisterSchema(role), [role])
+  const schema = useMemo(() => registerSchema(), [])
 
   const {
     register,
@@ -50,6 +52,7 @@ export function RegisterDetailsForm({ role, onBack, onSuccess, animationClass }:
     resolver: zodResolver(schema),
     mode: 'onBlur',
     defaultValues: {
+      role: role === 'lawyer' ? 'LAWYER' : 'CLIENT',
       firstName: '',
       lastName: '',
       email: '',
@@ -65,12 +68,33 @@ export function RegisterDetailsForm({ role, onBack, onSuccess, animationClass }:
   const passwordValue = watch('password')
   const strength = getPasswordStrength(passwordValue ?? '')
 
-  async function onSubmit() {
+  async function onSubmit(data: RegisterFormData) {
     setIsSubmitting(true)
-    await new Promise((resolve) => setTimeout(resolve, 1600))
+    
+    const result = await signupAction(data)
+    
+    if (result.error) {
+      setIsSubmitting(false)
+      const errorMessage = (result.error as any).root?.[0] || 'Account creation failed'
+      showToast(errorMessage, 'err')
+      return
+    }
+
+    // Explicitly sign in from the client to ensure the session cookie is correctly set in the browser
+    const { error: signInError } = await authClient.signIn.email({
+      email: data.email,
+      password: data.password,
+    })
+
     setIsSubmitting(false)
-    showToast('Account created!', 'ok')
-    onSuccess()
+
+    if (signInError) {
+      showToast('Account created but login failed. Please sign in.', 'err')
+      return
+    }
+
+    showToast('OTP sent to your email!', 'info')
+    onSuccess(data.email)
   }
 
   function onInvalid() {
@@ -83,7 +107,7 @@ export function RegisterDetailsForm({ role, onBack, onSuccess, animationClass }:
     <div className={animationClass}>
       <div className="mb-7">
         <div className="mb-2.5 text-[10px] font-medium uppercase tracking-[1.5px] text-og">
-          Step 2 of 2 · Account Details
+          Step 2 of 3 · Account Details
         </div>
         <h1 className="mb-1.5 font-serif text-[34px] font-light leading-[1.08] tracking-[-0.6px] text-[var(--t)]">
           Create your <em className="italic text-o2">account</em>

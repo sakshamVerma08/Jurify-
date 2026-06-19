@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { LEGAL_CASES, MY_POSTED_CASES } from '@/lib/data/cases'
+
 import type {
   CaseFilters,
   CasesTab,
@@ -17,6 +17,7 @@ interface CasesState {
   postModalOpen: boolean
   detailModalOpen: boolean
   myPostedCases: MyPostedCase[]
+  browseCases: LegalCase[]
   editingCaseId: string | null
   editModalOpen: boolean
   setViewRole: (role: UserRole) => void
@@ -28,6 +29,7 @@ interface CasesState {
   toggleStage: (stage: CaseFilters['stages'][number]) => void
   setLocation: (location: string) => void
   setPostedWithin: (postedWithin: CaseFilters['postedWithin']) => void
+  setProBonoOnly: (proBonoOnly: boolean) => void
   resetFilters: () => void
   toggleBookmark: (caseId: string) => void
   isBookmarked: (caseId: string) => boolean
@@ -38,6 +40,8 @@ interface CasesState {
   openEditModal: (caseId: string) => void
   closeEditModal: () => void
   addPostedCase: (newCase: Omit<MyPostedCase, 'id' | 'postedAgo' | 'progressStep' | 'applicantCount' | 'applicantInitials' | 'stageLabel' | 'assignedLawyerId' | 'assignedLawyerName' | 'applicantsDetail'>) => void
+  setMyPostedCases: (cases: MyPostedCase[]) => void
+  setBrowseCases: (cases: LegalCase[]) => void
   updatePostedCase: (caseId: string, updated: Partial<MyPostedCase>) => void
   assignLawyerToCase: (caseId: string, lawyerId: string, lawyerName: string, lawyerInitials: string) => void
   closePostedCase: (caseId: string) => void
@@ -53,6 +57,7 @@ const DEFAULT_FILTERS: CaseFilters = {
   stages: [],
   search: '',
   sort: 'newest',
+  proBonoOnly: false,
 }
 
 function parsePostedAgo(postedAgo: string): number {
@@ -81,7 +86,8 @@ export const useCasesStore = create<CasesState>((set, get) => ({
   detailCaseId: null,
   postModalOpen: false,
   detailModalOpen: false,
-  myPostedCases: [...MY_POSTED_CASES],
+  myPostedCases: [],
+  browseCases: [],
   editingCaseId: null,
   editModalOpen: false,
 
@@ -128,6 +134,9 @@ export const useCasesStore = create<CasesState>((set, get) => ({
 
   setPostedWithin: (postedWithin) =>
     set((state) => ({ filters: { ...state.filters, postedWithin } })),
+
+  setProBonoOnly: (proBonoOnly) =>
+    set((state) => ({ filters: { ...state.filters, proBonoOnly } })),
 
   resetFilters: () => set({ filters: DEFAULT_FILTERS }),
 
@@ -187,6 +196,10 @@ export const useCasesStore = create<CasesState>((set, get) => ({
       return { myPostedCases: [createdCase, ...state.myPostedCases] }
     }),
 
+  setMyPostedCases: (cases) => set({ myPostedCases: cases }),
+
+  setBrowseCases: (cases) => set({ browseCases: cases }),
+
   updatePostedCase: (caseId, updated) =>
     set((state) => ({
       myPostedCases: state.myPostedCases.map((c) =>
@@ -218,8 +231,8 @@ export const useCasesStore = create<CasesState>((set, get) => ({
     })),
 
   getFilteredCases: () => {
-    const { filters } = get()
-    let results = [...LEGAL_CASES]
+    const { filters, browseCases } = get()
+    let results = [...browseCases]
 
     if (filters.categories.length > 0) {
       results = results.filter((c) => filters.categories.includes(c.category))
@@ -245,6 +258,10 @@ export const useCasesStore = create<CasesState>((set, get) => ({
     }
     results = results.filter((c) => filterByPostedWithin(c.postedAgo, filters.postedWithin))
 
+    if (filters.proBonoOnly) {
+      results = results.filter((c) => c.isProBono)
+    }
+
     if (filters.sort === 'deadline') {
       results.sort((a, b) => a.deadline.localeCompare(b.deadline))
     } else if (filters.sort === 'relevant') {
@@ -256,8 +273,8 @@ export const useCasesStore = create<CasesState>((set, get) => ({
   },
 
   getDetailCase: () => {
-    const { detailCaseId } = get()
+    const { detailCaseId, browseCases } = get()
     if (!detailCaseId) return null
-    return LEGAL_CASES.find((c) => c.id === detailCaseId) ?? null
+    return browseCases.find((c) => c.id === detailCaseId) ?? null
   },
 }))

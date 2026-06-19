@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { JurifyLogoIcon } from '@/components/icons/JurifyLogoIcon'
+import { getKycStatus } from '@/actions/kyc/getStatus'
 
 interface KycApp {
   name: string
@@ -43,203 +44,6 @@ interface KycApp {
     meta: string
   }>
   primaryActionTxt: string
-}
-
-// APPLICATION DATA BY REFERENCE NUMBER
-const APPS: Record<string, KycApp> = {
-  'JRF-2026-DL-48291': {
-    name: 'Adv. Priya Mehta',
-    nameEm: 'Priya <em>Mehta</em>',
-    meta: 'Submitted May 20, 2026 · Delhi Bar Council',
-    overall: 'pending',
-    overallTxt: 'Under Review',
-    enrollment: 'D/4821/2016',
-    bar: 'Delhi Bar Council',
-    degree: 'LLB (Hons.), University of Delhi',
-    submitted: 'May 20, 2026',
-    attempt: '#1',
-    eta: '1–2 business days remaining',
-    etaSub: 'Application submitted 2 days ago · Processing within SLA',
-    etaLabel: 'Estimated Completion',
-    etaPct: '65',
-    showEta: true,
-    showRejection: false,
-    docs: { aadhaar: 'ok', pan: 'ok', barCert: 'checking', degree: 'ok', photo: 'ok' },
-    steps: [
-      { name: 'KYC Form Submitted', desc: 'Your application form, personal details, and practice area information were received and assigned a reference number.', status: 'done', time: 'May 20, 2026 · 11:24 AM', badge: 'Completed', docs: null },
-      {
-        name: 'Documents Received',
-        desc: 'All 5 required documents were uploaded successfully and assigned for initial review.',
-        status: 'done',
-        time: 'May 20, 2026 · 11:28 AM',
-        badge: 'Completed',
-        docs: [
-          { name: 'Aadhaar Card', status: 'ok' },
-          { name: 'PAN Card', status: 'ok' },
-          { name: 'Bar Council Certificate', status: 'checking' },
-          { name: 'Degree Certificate', status: 'ok' },
-          { name: 'Profile Photo', status: 'ok' }
-        ]
-      },
-      { name: 'Initial Screening', desc: 'An automated pre-check verified the format, readability, and completeness of all uploaded documents. No issues found.', status: 'done', time: 'May 20, 2026 · 11:35 AM', badge: 'Passed', docs: null },
-      { name: 'Admin Review', desc: 'Your application has been assigned to a senior verification officer for manual review of credentials and enrollment details.', status: 'active', time: 'May 22, 2026 · 09:14 AM', badge: 'In Progress', docs: null },
-      { name: 'Bar Council Verification', desc: 'Your enrollment number will be cross-checked with the Bar Council of Delhi registry to confirm active standing.', status: 'pending', time: 'Pending', badge: 'Awaiting', docs: null },
-      { name: 'Final Approval', desc: 'Upon successful verification, a gold verified badge will be granted to your profile and an approval confirmation sent to your email.', status: 'pending', time: 'Pending', badge: 'Awaiting', docs: null },
-    ],
-    timeline: [
-      { dot: 'gold', action: 'Assigned to verification officer — Smt. R. Sharma', meta: 'May 22, 2026 · 09:14 AM' },
-      { dot: 'green', action: 'Initial document screening passed (5/5 documents)', meta: 'May 20, 2026 · 11:35 AM' },
-      { dot: 'green', action: 'All 5 documents uploaded and received', meta: 'May 20, 2026 · 11:28 AM' },
-      { dot: 'green', action: 'KYC application submitted · Ref: JRF-2026-DL-48291', meta: 'May 20, 2026 · 11:24 AM' },
-      { dot: 'blue', action: 'OTP verified · KYC form completed', meta: 'May 20, 2026 · 11:22 AM' },
-    ],
-    primaryActionTxt: 'Get Status Notifications'
-  },
-  'JRF-2026-MH-77342': {
-    name: 'Adv. Vikram Choudhary',
-    nameEm: 'Vikram <em>Choudhary</em>',
-    meta: 'Submitted May 8, 2026 · Maharashtra Bar Council',
-    overall: 'approved',
-    overallTxt: 'Verified & Approved',
-    enrollment: 'MH/2218/2017',
-    bar: 'Maharashtra Bar Council',
-    degree: 'LLB, Government Law College, Mumbai',
-    submitted: 'May 8, 2026',
-    attempt: '#1',
-    eta: 'Verification complete',
-    etaSub: 'Approved May 11, 2026 · Gold badge active on your profile',
-    etaLabel: 'Status',
-    etaPct: '100',
-    showEta: true,
-    showRejection: false,
-    docs: { aadhaar: 'ok', pan: 'ok', barCert: 'ok', degree: 'ok', photo: 'ok' },
-    steps: [
-      { name: 'KYC Form Submitted', desc: 'Application form submitted with all credentials and practice area details.', status: 'done', time: 'May 8, 2026 · 09:42 AM', badge: 'Completed', docs: null },
-      {
-        name: 'Documents Received',
-        desc: 'All 5 required documents uploaded and received without issues.',
-        status: 'done',
-        time: 'May 8, 2026 · 09:48 AM',
-        badge: 'Completed',
-        docs: [
-          { name: 'Aadhaar Card', status: 'ok' },
-          { name: 'PAN Card', status: 'ok' },
-          { name: 'Bar Council Certificate', status: 'ok' },
-          { name: 'Degree Certificate', status: 'ok' },
-          { name: 'Profile Photo', status: 'ok' }
-        ]
-      },
-      { name: 'Initial Screening', desc: 'Automated pre-check passed. All documents clear, readable, and complete.', status: 'done', time: 'May 8, 2026 · 09:52 AM', badge: 'Passed', docs: null },
-      { name: 'Admin Review', desc: 'Credentials reviewed by verification officer. Enrollment number and degree confirmed.', status: 'done', time: 'May 9, 2026 · 02:30 PM', badge: 'Completed', docs: null },
-      { name: 'Bar Council Verification', desc: 'Enrollment MH/2218/2017 confirmed as active with Maharashtra Bar Council registry.', status: 'done', time: 'May 10, 2026 · 11:18 AM', badge: 'Confirmed', docs: null },
-      { name: 'Final Approval', desc: 'Verification complete. Gold verified badge granted. Approval email sent to registered address.', status: 'done', time: 'May 11, 2026 · 10:05 AM', badge: 'Approved', docs: null },
-    ],
-    timeline: [
-      { dot: 'green', action: 'Gold verified badge granted — profile now shows ✓ Verified', meta: 'May 11, 2026 · 10:05 AM' },
-      { dot: 'green', action: 'Bar Council confirmation received from Maharashtra registry', meta: 'May 10, 2026 · 11:18 AM' },
-      { dot: 'green', action: 'Admin review completed — credentials approved', meta: 'May 9, 2026 · 02:30 PM' },
-      { dot: 'green', action: 'All 5 documents verified and passed initial screening', meta: 'May 8, 2026 · 09:52 AM' },
-      { dot: 'green', action: 'KYC application submitted · Ref: JRF-2026-MH-77342', meta: 'May 8, 2026 · 09:42 AM' },
-    ],
-    primaryActionTxt: 'View Verified Profile'
-  },
-  'JRF-2026-KA-55198': {
-    name: 'Adv. Meera Pillai',
-    nameEm: 'Meera <em>Pillai</em>',
-    meta: 'Submitted May 15, 2026 · Karnataka Bar Council',
-    overall: 'review',
-    overallTxt: 'Bar Council Check',
-    enrollment: 'KL/1934/2014',
-    bar: 'Karnataka Bar Council',
-    degree: 'LLM, Kerala Law Academy',
-    submitted: 'May 15, 2026',
-    attempt: '#1',
-    eta: '2–3 business days remaining',
-    etaSub: 'Awaiting response from Karnataka Bar Council registry',
-    etaLabel: 'Estimated Completion',
-    etaPct: '80',
-    showEta: true,
-    showRejection: false,
-    docs: { aadhaar: 'ok', pan: 'ok', barCert: 'ok', degree: 'ok', photo: 'ok' },
-    steps: [
-      { name: 'KYC Form Submitted', desc: 'Application received with all personal and professional credentials.', status: 'done', time: 'May 15, 2026 · 03:18 PM', badge: 'Completed', docs: null },
-      {
-        name: 'Documents Received',
-        desc: 'All 5 documents uploaded and received for review.',
-        status: 'done',
-        time: 'May 15, 2026 · 03:24 PM',
-        badge: 'Completed',
-        docs: [
-          { name: 'Aadhaar Card', status: 'ok' },
-          { name: 'PAN Card', status: 'ok' },
-          { name: 'Bar Council Certificate', status: 'ok' },
-          { name: 'Degree Certificate', status: 'ok' },
-          { name: 'Profile Photo', status: 'ok' }
-        ]
-      },
-      { name: 'Initial Screening', desc: 'All documents passed automated format and readability checks.', status: 'done', time: 'May 15, 2026 · 03:30 PM', badge: 'Passed', docs: null },
-      { name: 'Admin Review', desc: 'Manual review completed. All credentials match the submitted documents.', status: 'done', time: 'May 16, 2026 · 11:55 AM', badge: 'Completed', docs: null },
-      { name: 'Bar Council Verification', desc: 'Verification request sent to Karnataka Bar Council registry. Awaiting official confirmation of enrollment KL/1934/2014.', status: 'active', time: 'May 17, 2026 · 09:00 AM', badge: 'Awaiting Registry', docs: null },
-      { name: 'Final Approval', desc: 'Final approval will be issued once the Bar Council registry confirms your active standing.', status: 'pending', time: 'Pending', badge: 'Awaiting', docs: null },
-    ],
-    timeline: [
-      { dot: 'gold', action: 'Bar Council registry request sent — awaiting confirmation', meta: 'May 17, 2026 · 09:00 AM' },
-      { dot: 'green', action: 'Admin review completed — credentials approved', meta: 'May 16, 2026 · 11:55 AM' },
-      { dot: 'green', action: 'All documents passed initial automated screening', meta: 'May 15, 2026 · 03:30 PM' },
-      { dot: 'green', action: '5 documents received and logged', meta: 'May 15, 2026 · 03:24 PM' },
-      { dot: 'green', action: 'KYC application submitted · Ref: JRF-2026-KA-55198', meta: 'May 15, 2026 · 03:18 PM' },
-    ],
-    primaryActionTxt: 'Get Status Notifications'
-  },
-  'JRF-2026-WB-33041': {
-    name: 'Adv. Deepak Joshi',
-    nameEm: 'Deepak <em>Joshi</em>',
-    meta: 'Submitted May 5, 2026 · West Bengal Bar Council',
-    overall: 'rejected',
-    overallTxt: 'Not Approved',
-    enrollment: 'WB/2847/2022',
-    bar: 'West Bengal Bar Council',
-    degree: 'LLB, University of Calcutta',
-    submitted: 'May 5, 2026',
-    attempt: '#1',
-    eta: 'Action Required',
-    etaSub: 'Please review the rejection reason and re-submit with corrected documents',
-    etaLabel: 'Next Step',
-    etaPct: '45',
-    showEta: false,
-    showRejection: true,
-    rejectionReason: '<strong>Reason:</strong> The Bar Council Certificate uploaded (page 2 of 3) does not match the enrollment number provided (WB/2847/2022). The certificate appears to belong to a different advocate. Please re-upload the complete, correct Bar Council registration certificate clearly showing your enrollment number.',
-    docs: { aadhaar: 'ok', pan: 'ok', barCert: 'fail', degree: 'ok', photo: 'ok' },
-    steps: [
-      { name: 'KYC Form Submitted', desc: 'Application received with personal and professional credentials.', status: 'done', time: 'May 5, 2026 · 10:11 AM', badge: 'Completed', docs: null },
-      {
-        name: 'Documents Received',
-        desc: '5 documents uploaded. One document later flagged during review.',
-        status: 'done',
-        time: 'May 5, 2026 · 10:18 AM',
-        badge: 'Completed',
-        docs: [
-          { name: 'Aadhaar Card', status: 'ok' },
-          { name: 'PAN Card', status: 'ok' },
-          { name: 'Bar Council Certificate', status: 'fail' },
-          { name: 'Degree Certificate', status: 'ok' },
-          { name: 'Profile Photo', status: 'ok' }
-        ]
-      },
-      { name: 'Initial Screening', desc: 'Automated checks passed. Document mismatch was not detectable at this stage.', status: 'done', time: 'May 5, 2026 · 10:24 AM', badge: 'Passed', docs: null },
-      { name: 'Admin Review', desc: 'Manual review identified that the uploaded Bar Council Certificate does not match the enrollment number provided. Application escalated for rejection.', status: 'done', time: 'May 7, 2026 · 02:45 PM', badge: 'Issue Found', docs: null },
-      { name: 'Bar Council Verification', desc: 'Verification could not proceed due to document mismatch identified in admin review.', status: 'rejected', time: 'May 8, 2026 · 10:00 AM', badge: 'Blocked', docs: null },
-      { name: 'Final Approval', desc: 'Application rejected. A detailed rejection notice has been sent to your registered email address. Please re-submit with the correct documents.', status: 'rejected', time: 'May 8, 2026 · 10:05 AM', badge: 'Rejected', docs: null },
-    ],
-    timeline: [
-      { dot: 'err', action: 'Application rejected — detailed notice sent to email', meta: 'May 8, 2026 · 10:05 AM' },
-      { dot: 'err', action: 'Bar Council verification blocked — document mismatch', meta: 'May 8, 2026 · 10:00 AM' },
-      { dot: 'gold', action: 'Admin review flagged Bar Council Certificate mismatch', meta: 'May 7, 2026 · 02:45 PM' },
-      { dot: 'green', action: 'Initial automated screening passed', meta: 'May 5, 2026 · 10:24 AM' },
-      { dot: 'green', action: 'KYC application submitted · Ref: JRF-2026-WB-33041', meta: 'May 5, 2026 · 10:11 AM' },
-    ],
-    primaryActionTxt: 'Re-Submit Application'
-  }
 }
 
 const stepIcons = {
@@ -308,11 +112,115 @@ const colors: Record<string, string> = {
   err: 'var(--danger)'
 }
 
+function mapBackendToFrontend(backendData: any): KycApp {
+  const { lawyer, status, submittedAt, documents, statusEvents } = backendData
+  
+  const overallMap: Record<string, KycApp['overall']> = {
+    'PENDING': 'pending',
+    'APPROVED': 'approved',
+    'REJECTED': 'rejected',
+  }
+  
+  const overallTxtMap: Record<string, string> = {
+    'PENDING': 'Under Review',
+    'APPROVED': 'Verified & Approved',
+    'REJECTED': 'Not Approved',
+  }
+
+  return {
+    name: `Adv. ${lawyer.firstName} ${lawyer.lastName}`,
+    nameEm: `${lawyer.firstName} <em>${lawyer.lastName}</em>`,
+    meta: `Submitted ${new Date(submittedAt).toLocaleDateString()} · ${lawyer.barCouncilState || 'Bar Council'}`,
+    overall: overallMap[status] || 'review',
+    overallTxt: overallTxtMap[status] || 'Bar Council Check',
+    enrollment: lawyer.enrollmentNo || '—',
+    bar: lawyer.barCouncilState || '—',
+    degree: lawyer.degree || '—',
+    submitted: new Date(submittedAt).toLocaleDateString(),
+    attempt: '#1',
+    eta: status === 'APPROVED' ? 'Verification complete' : '1–2 business days remaining',
+    etaSub: status === 'APPROVED' ? 'Gold badge active on your profile' : 'Processing within SLA',
+    etaLabel: status === 'APPROVED' ? 'Status' : 'Estimated Completion',
+    etaPct: status === 'APPROVED' ? '100' : '20',
+    showEta: status !== 'REJECTED',
+    showRejection: status === 'REJECTED',
+    docs: {
+      aadhaar: documents.find((d: any) => d.type === 'AADHAAR')?.status === 'APPROVED' ? 'ok' : 'checking',
+      pan: documents.find((d: any) => d.type === 'PAN')?.status === 'APPROVED' ? 'ok' : 'checking',
+      barCert: documents.find((d: any) => d.type === 'BAR_CERTIFICATE')?.status === 'APPROVED' ? 'ok' : 'checking',
+      degree: 'ok',
+      photo: documents.find((d: any) => d.type === 'PROFILE_PHOTO')?.status === 'APPROVED' ? 'ok' : 'checking',
+    },
+    steps: [
+      {
+        id: 'FORM_SUBMITTED',
+        label: 'Application Form Submitted',
+        desc: 'We have received your KYC application details.'
+      },
+      {
+        id: 'DOCUMENTS_RECEIVED',
+        label: 'Documents Received',
+        desc: 'Verification documents received and queued for screening.'
+      },
+      {
+        id: 'INITIAL_SCREENING',
+        label: 'Identity Verification',
+        desc: 'Screening of Aadhaar, PAN, and profile photo.'
+      },
+      {
+        id: 'BAR_COUNCIL_VERIFICATION',
+        label: 'Bar Council Check',
+        desc: 'Verifying your credentials with the respective state Bar Council.'
+      },
+      {
+        id: 'FINAL_APPROVAL',
+        label: 'Final Review',
+        desc: 'Final manual review and approval by the Jurify team.'
+      }
+    ].map(stepDef => {
+      const evt = statusEvents.find((e: any) => e.step === stepDef.id)
+      let currentStatus: 'done' | 'active' | 'pending' | 'rejected' = 'pending'
+      let badge = 'Awaiting'
+      let time = ''
+      
+      if (evt) {
+        if (evt.status === 'APPROVED') {
+          currentStatus = 'done'
+          badge = 'Completed'
+        } else if (evt.status === 'REJECTED') {
+          currentStatus = 'rejected'
+          badge = 'Rejected'
+        } else {
+          currentStatus = 'active'
+          badge = 'In Progress'
+        }
+        time = new Date(evt.createdAt).toLocaleString()
+      }
+
+      return {
+        name: stepDef.label,
+        desc: evt?.note || stepDef.desc,
+        status: currentStatus,
+        time: time,
+        badge: badge,
+        docs: null
+      }
+    }),
+    timeline: statusEvents.map((evt: any) => ({
+      dot: evt.status === 'APPROVED' ? 'green' : evt.status === 'REJECTED' ? 'err' : 'gold',
+      action: evt.note,
+      meta: new Date(evt.createdAt).toLocaleString()
+    })),
+    primaryActionTxt: status === 'APPROVED' ? 'View Verified Profile' : 'Get Status Notifications'
+  }
+}
+
 export default function KycStatusPage() {
   const [refInput, setRefInput] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
   const [loading, setLoading] = useState(false)
-  const [activeRef, setActiveRef] = useState<keyof typeof APPS | null>(null)
+  const [activeRef, setActiveRef] = useState<string | null>(null)
+  const [activeData, setActiveData] = useState<KycApp | null>(null)
 
   // Toast notifications state
   const [toast, setToast] = useState({ show: false, msg: 'Done', type: 'info' })
@@ -332,12 +240,12 @@ export default function KycStatusPage() {
     }
   }, [])
 
-  const fillRef = (ref: keyof typeof APPS) => {
+  const fillRef = async (ref: string) => {
     setRefInput(ref)
     setErrorMsg('')
   }
 
-  const trackApp = () => {
+  const trackApp = async () => {
     const val = refInput.trim().toUpperCase()
     if (!val) {
       showErr('Please enter your reference number.')
@@ -347,20 +255,21 @@ export default function KycStatusPage() {
       showErr('Invalid format. Reference numbers follow the pattern JRF-YYYY-ST-XXXXX.')
       return
     }
-    if (!(val in APPS)) {
-      showErr('Reference number not found. Please check the number from your confirmation email.')
-      return
-    }
 
     setErrorMsg('')
     setLoading(true)
 
-    // Simulate loading tracking state
-    setTimeout(() => {
-      setLoading(false)
-      setActiveRef(val as keyof typeof APPS)
+    const res = await getKycStatus(val)
+    
+    setLoading(false)
+
+    if (res.success && res.data) {
+      setActiveData(mapBackendToFrontend(res.data))
+      setActiveRef(val)
       window.scrollTo({ top: 0, behavior: 'smooth' })
-    }, 1400)
+    } else {
+      showErr(res.error || 'Reference number not found. Please check the number from your confirmation email.')
+    }
   }
 
   const showErr = (msg: string) => {
@@ -374,12 +283,11 @@ export default function KycStatusPage() {
 
   const resetSearch = () => {
     setActiveRef(null)
+    setActiveData(null)
     setRefInput('')
     setErrorMsg('')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
-
-  const activeData = activeRef ? APPS[activeRef] : null
 
   function docStatus(status: 'ok' | 'fail' | 'checking') {
     if (status === 'ok') {

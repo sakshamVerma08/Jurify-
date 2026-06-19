@@ -3,7 +3,7 @@
 
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FieldError } from '@/components/auth/FieldError'
@@ -15,6 +15,7 @@ import { kycStep3Schema, type KycStep3FormData } from '@/lib/validations/kyc'
 import { cn } from '@/lib/utils'
 import { useKycStore } from '@/stores/kycStore'
 import { useUiStore } from '@/stores/uiStore'
+import { uploadToCloudinary } from '@/lib/cloudinary-upload'
 
 const INPUT =
   'login-input w-full rounded-[10px] border py-3 px-3.5 font-sans text-[13.5px] text-[var(--t)] outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-[rgba(245,240,234,0.22)]'
@@ -35,6 +36,7 @@ export function KycStep3Profile() {
   const showToast = useUiStore((s) => s.showToast)
   const photoInputRef = useRef<HTMLInputElement>(null)
   const videoInputRef = useRef<HTMLInputElement>(null)
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
 
   const {
     register,
@@ -62,8 +64,27 @@ export function KycStep3Profile() {
     return () => sub.unsubscribe()
   }, [watch, setStep3])
 
+  async function handlePhotoSelect(f: File) {
+    if (f.size > 5 * 1024 * 1024) {
+      showToast('Photo size must be under 5MB', 'err')
+      return
+    }
+
+    try {
+      setIsUploadingPhoto(true)
+      const fileInfo = await uploadToCloudinary(f)
+      setPhoto(fileInfo, fileInfo.secure_url)
+      showToast('Profile photo uploaded successfully', 'ok')
+    } catch (err) {
+      console.error(err)
+      showToast('Failed to upload profile photo', 'err')
+    } finally {
+      setIsUploadingPhoto(false)
+    }
+  }
+
   function onValid() {
-    if (!photo?.file) {
+    if (!photo?.secure_url) {
       showToast('Profile photo is required', 'err')
       return
     }
@@ -72,15 +93,6 @@ export function KycStep3Profile() {
 
   function onInvalid() {
     showToast('Please complete all required profile fields', 'err')
-  }
-
-  function handlePhotoSelect(file: File) {
-    if (file.size > 5 * 1024 * 1024) {
-      showToast('Photo must be under 5MB', 'err')
-      return
-    }
-    const url = URL.createObjectURL(file)
-    setPhoto(file, url)
   }
 
   const charClass =
@@ -146,12 +158,16 @@ export function KycStep3Profile() {
             <div className="flex gap-2">
               <button
                 type="button"
+                disabled={isUploadingPhoto}
                 onClick={() => photoInputRef.current?.click()}
-                className="cursor-pointer rounded-lg border border-og/30 bg-og/[0.14] px-4 py-2 font-sans text-xs font-medium text-o2 transition-all duration-150 hover:border-og/50 hover:bg-og/[0.22]"
+                className={cn(
+                  "cursor-pointer rounded-lg border border-og/30 bg-og/[0.14] px-4 py-2 font-sans text-xs font-medium text-o2 transition-all duration-150 hover:border-og/50 hover:bg-og/[0.22]",
+                  isUploadingPhoto && "opacity-60 cursor-not-allowed"
+                )}
               >
-                Upload Photo
+                {isUploadingPhoto ? 'Uploading...' : 'Upload Photo'}
               </button>
-              {photoPreviewUrl && (
+              {photoPreviewUrl && !isUploadingPhoto && (
                 <button
                   type="button"
                   onClick={() => {

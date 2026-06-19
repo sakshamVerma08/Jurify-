@@ -62,6 +62,11 @@ export function CaseCard({ legalCase, viewRole, index = 0 }: CaseCardProps) {
           <span className="rounded-full bg-og/15 px-2.5 py-1 text-[10.5px] font-semibold tracking-wide text-o2">
             {legalCase.category}
           </span>
+          {legalCase.isProBono && (
+            <span className="rounded-full border border-success/30 bg-success/10 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-success">
+              Pro Bono
+            </span>
+          )}
           <span
             className={cn(
               'rounded-full border px-2.5 py-1 text-[10px] font-medium',

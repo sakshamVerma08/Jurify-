@@ -12,9 +12,10 @@ import { JurifyLogoIcon } from '@/components/icons/JurifyLogoIcon'
 import { loginSchema, type LoginFormData } from '@/lib/validations/auth'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/stores/uiStore'
+import { authClient } from '@/lib/auth/auth-client'
 
 interface Props {
-  onLoginSuccess: (email: string) => void
+  onLoginSuccess: (email: string, isVerified: boolean) => void
   onForgotPassword: () => void
 }
 
@@ -45,10 +46,35 @@ export function LoginForm({ onLoginSuccess, onForgotPassword }: Props) {
 
   async function onSubmit(data: LoginFormData) {
     setIsSubmitting(true)
-    await new Promise((resolve) => setTimeout(resolve, 1400))
+    
+    // Use authClient to guarantee the auth_session cookie is correctly set by the browser
+    const { data: signInData, error } = await authClient.signIn.email({
+      email: data.email,
+      password: data.password,
+    })
+
+    if (error) {
+      setIsSubmitting(false)
+      showToast(error.message || 'Invalid email or password', 'err')
+      return
+    }
+
+    if (signInData?.user) {
+      if (signInData.user.emailVerified) {
+        showToast('Welcome back!', 'ok')
+        onLoginSuccess(data.email, true)
+      } else {
+        // Verification Guardrail Intercept
+        await authClient.emailOtp.sendVerificationOtp({
+          email: data.email,
+          type: "email-verification"
+        })
+        showToast('Please verify your email. Code sent.', 'info')
+        onLoginSuccess(data.email, false)
+      }
+    }
+    
     setIsSubmitting(false)
-    showToast('Code sent to your email', 'ok')
-    onLoginSuccess(data.email)
   }
 
   function handleGoogleLogin() {

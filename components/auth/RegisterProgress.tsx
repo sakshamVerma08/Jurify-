@@ -11,7 +11,8 @@ interface Props {
 const STEPS = [
   { id: 1, label: 'Role' },
   { id: 2, label: 'Details' },
-  { id: 3, label: 'Done' },
+  { id: 3, label: 'Verify' },
+  { id: 4, label: 'Done' },
 ] as const
 
 function CheckIcon() {
