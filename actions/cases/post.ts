@@ -4,25 +4,25 @@ import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma/prisma'
 import { requireAuth } from '@/lib/auth/auth-helper'
 import { postCaseSchema, type PostCaseFormData } from '@/lib/validations/case'
-import { CaseStage } from '@prisma/client'
+
 
 /**
  * Maps the frontend form string stage to the Prisma Enum CaseStage
  */
-function mapStage(stage: string): CaseStage {
+function mapStage(stage: string): any {
   switch (stage) {
     case 'Initial Consultation':
-      return CaseStage.INITIAL_CONSULTATION
+      return 'INITIAL_CONSULTATION'
     case 'Investigation':
-      return CaseStage.INVESTIGATION
+      return 'INVESTIGATION'
     case 'Pre-Hearing / Filing':
-      return CaseStage.PRE_HEARING
+      return 'PRE_HEARING'
     case 'Trial':
-      return CaseStage.TRIAL
+      return 'TRIAL'
     case 'Appeal':
-      return CaseStage.APPEAL
+      return 'APPEAL'
     default:
-      return CaseStage.INITIAL_CONSULTATION
+      return 'INITIAL_CONSULTATION'
   }
 }
 

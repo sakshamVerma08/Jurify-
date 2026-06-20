@@ -4,28 +4,28 @@ import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma/prisma'
 import { requireAuth } from '@/lib/auth/auth-helper'
 import { postCaseSchema, type PostCaseFormData } from '@/lib/validations/case'
-import { CaseStage } from '@prisma/client'
+
 import { formatDistanceToNow } from 'date-fns'
 
-function mapStage(stage: string): CaseStage {
+function mapStage(stage: string): string {
   switch (stage) {
-    case 'Initial Consultation': return CaseStage.INITIAL_CONSULTATION
-    case 'Investigation': return CaseStage.INVESTIGATION
-    case 'Pre-Hearing / Filing': return CaseStage.PRE_HEARING
-    case 'Trial': return CaseStage.TRIAL
-    case 'Appeal': return CaseStage.APPEAL
-    default: return CaseStage.INITIAL_CONSULTATION
+    case 'Initial Consultation': return 'INITIAL_CONSULTATION'
+    case 'Investigation': return 'INVESTIGATION'
+    case 'Pre-Hearing / Filing': return 'PRE_HEARING'
+    case 'Trial': return 'TRIAL'
+    case 'Appeal': return 'APPEAL'
+    default: return 'INITIAL_CONSULTATION'
   }
 }
 
-function mapStageToFrontend(stage: CaseStage) {
+function mapStageToFrontend(stage: string) {
   switch (stage) {
-    case CaseStage.INITIAL_CONSULTATION: return { stage: 'initial', label: 'Initial Stage' }
-    case CaseStage.INVESTIGATION: return { stage: 'investigation', label: 'Investigation' }
-    case CaseStage.PRE_HEARING: return { stage: 'hearing', label: 'Pre-Hearing' }
-    case CaseStage.TRIAL: return { stage: 'trial', label: 'Trial' }
-    case CaseStage.VERDICT: return { stage: 'verdict', label: 'Verdict' }
-    case CaseStage.APPEAL: return { stage: 'appeal', label: 'Appeal' }
+    case 'INITIAL_CONSULTATION': return { stage: 'initial', label: 'Initial Stage' }
+    case 'INVESTIGATION': return { stage: 'investigation', label: 'Investigation' }
+    case 'PRE_HEARING': return { stage: 'hearing', label: 'Pre-Hearing' }
+    case 'TRIAL': return { stage: 'trial', label: 'Trial' }
+    case 'VERDICT': return { stage: 'verdict', label: 'Verdict' }
+    case 'APPEAL': return { stage: 'appeal', label: 'Appeal' }
     default: return { stage: 'initial', label: 'Initial Stage' }
   }
 }
